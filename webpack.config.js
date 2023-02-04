@@ -14,6 +14,9 @@ module.exports = {
     },
     resolve: {
         extensions: ['.ts', '.js'],
+        alias: {
+            core: path.resolve(__dirname, 'src/engine/core.ts')
+        }
         /* alias: {
             math: path.resolve(__dirname, 'src/core/math/math.ts'),
             core: path.resolve(__dirname, 'src/core/core.ts'),
@@ -28,7 +31,7 @@ module.exports = {
     mode: 'development',
     plugins: [
         new CopyWebpackPlugin({patterns: [
-            { from: 'src/assets', to: 'assets' }
+            { from: 'src/game/assets', to: 'assets' }
         ]})
     ]
 }

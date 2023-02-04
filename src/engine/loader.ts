@@ -1,22 +1,15 @@
+import { Scene } from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export class Loader
 {
-    private _scene: THREE.Scene;
-    private _fbxLoader: FBXLoader;
-    private _gltfLoader: GLTFLoader;
-
-    constructor(scene: THREE.Scene)
-    {
-        this._scene = scene;
-        this._fbxLoader = new FBXLoader();
-        this._gltfLoader = new GLTFLoader();
-    }
+    constructor() {}
     
-    public loadFBX(path: string): void
+    public static loadFBX(path: string, scene: THREE.Scene): void
     {
-        this._fbxLoader.load(path, ( object ) => {
+        const fbxLoader = new FBXLoader();
+        fbxLoader.load(path, ( object ) => {
             object.traverse ( function ( child ) {
                 if ((child as THREE.Mesh).isMesh) {
                     const m = (child as THREE.Mesh)
@@ -31,14 +24,14 @@ export class Loader
                     }
             });
             object.scale.set(0.001, 0.001, 0.001);  
-            
-            this._scene.add( object );
+            scene.add( object );
         } );
     }
 
-    public loadGLTF(path: string): void
+    public static loadGLTF(path: string, scene: THREE.Scene): void
     {
-        this._gltfLoader.load(path, (gltf) => {
+        const gltfLoader = new GLTFLoader();
+        gltfLoader.load(path, (gltf) => {
                 gltf.scene.traverse(function (child) {
                     if ((child as THREE.Mesh).isMesh) {
                         const m = (child as THREE.Mesh)
@@ -54,7 +47,7 @@ export class Loader
                         l.shadow.mapSize.height = 2048
                     } */
                 })
-                this._scene.add(gltf.scene);
+                scene.add(gltf.scene);
             },
             (xhr) => {
                 console.log((xhr.loaded / xhr.total) * 100 + '% loaded')

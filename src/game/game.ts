@@ -1,40 +1,20 @@
-import * as THREE from "three";
 
+import { Loader, THREE } from 'core';
 
-import { Loader } from "./loader";
-import {vec2, vec3, vec4} from "gl-matrix";
-
-export class Renderer
+export class Game 
 {
     private _scene: THREE.Scene;
-    private _camera: THREE.PerspectiveCamera;
-    private _renderer: THREE.WebGLRenderer;
+    private _camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
     private _pointLight!: THREE.PointLight;
     private _spotLight!: THREE.SpotLight;
     private _directionalLight!: THREE.DirectionalLight;
-    private _loader: Loader;
 
-    constructor(engineElement: string)
+    constructor()
     {
         this._scene = new THREE.Scene();
-
         this._camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.001, 1000 );
         this._camera.position.set(5, 1.5, 0);
         this._camera.rotation.set(0, 3.14/2, 0);
-
-        this._renderer = new THREE.WebGLRenderer({ antialias: true });
-        this._renderer.setSize( window.innerWidth, window.innerHeight );
-        this._renderer.shadowMap.enabled = true;
-        this._renderer.shadowMap.type = THREE.PCFShadowMap; 
-        this._renderer.shadowMap.autoUpdate = true;
-        //this._renderer.outputEncoding = THREE.sRGBEncoding;
-        this._renderer.toneMapping = THREE.ReinhardToneMapping;
-        //this._renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this._renderer.toneMappingExposure = 2.4;
-        this._renderer.physicallyCorrectLights = true;
-        document.getElementById(engineElement)?.appendChild( this._renderer.domElement );
-
-        this._loader = new Loader(this._scene);
     }
 
     public initialize(): void
@@ -50,9 +30,9 @@ export class Renderer
         cube.name = "cube";
         cube.position.set(0, 2, -1);
 
-        // this._loader.loadFBX('assets/models/well_FBX.fbx');
-        this._loader.loadGLTF('assets/models/sponza.glb');
-        this._loader.loadGLTF('assets/models/zombie.glb');
+        // Loader.loadFBX('assets/models/well_FBX.fbx');
+        Loader.loadGLTF('assets/models/sponza.glb', this._scene);
+        Loader.loadGLTF('assets/models/zombie.glb', this._scene);
         
         this._scene.add( cube );
         this._scene.add( new THREE.AxesHelper( 5 ));
@@ -64,7 +44,7 @@ export class Renderer
         const ambientLight = new THREE.AmbientLight( 0xffffff, 0.005 );
         //this._scene.add( ambientLight );
 
-        const hemisphericLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
+        const hemisphericLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
         this._scene.add( hemisphericLight );
 
         this._spotLight = new THREE.SpotLight( 0xffffff, 1 );
@@ -86,13 +66,10 @@ export class Renderer
         skyBox.receiveShadow = false;
         this._scene.add( skyBox );
 
-
     }
 
     public update(): void
     {
-        this._renderer.render( this._scene, this._camera );
-
         window.addEventListener( 'keydown', ( event ) => {
             if(event.key == "w")
                 this._camera.translateZ(-0.001);
@@ -126,11 +103,8 @@ export class Renderer
             this._pointLight.position.x = Math.sin(Date.now() / 1000) * 10;
         }
     }
+    
+    public get scene(): THREE.Scene { return this._scene; }
 
-    public resize(): void
-    {
-        this._camera.aspect = window.innerWidth / window.innerHeight;
-        this._camera.updateProjectionMatrix();
-        this._renderer.setSize( window.innerWidth, window.innerHeight );
-    }
+    public get camera(): THREE.PerspectiveCamera | THREE.OrthographicCamera { return this._camera; }
 }

@@ -1,4 +1,4 @@
-import { Engine } from "./engine";
+import { Engine } from "./engine/engine";
 
 let engine = new Engine("engine");
 
