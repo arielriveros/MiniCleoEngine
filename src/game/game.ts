@@ -1,5 +1,6 @@
 
-import { Level, Loader, THREE } from 'core';
+import { InputManager, Level, Loader, THREE } from 'core';
+import { Quaternion } from 'three';
 
 export class Game 
 {
@@ -106,6 +107,46 @@ export class Game
         }
     }
     
+    public inputListener(input: InputManager): void
+    {
+        if(input.isMouseMoving())
+        {
+            let bothPressed: boolean = input.isMouseButtonPressed('Left') && input.isMouseButtonPressed('Right')
+            if(bothPressed)
+            {
+                let scale = 0.005;
+                this._camera.translateX(input.getMouseSpeed()[0] * scale );
+                this._camera.translateY(-input.getMouseSpeed()[1] * scale );
+            }
+            else
+            {
+
+                if(input.isMouseButtonPressed('Left'))
+                {
+                    let scale = 0.01;
+                    this._camera.translateX(input.getMouseSpeed()[0] * scale);
+                    this._camera.translateZ(input.getMouseSpeed()[1] * scale);
+                }
+            
+                if(input.isMouseButtonPressed('Right'))
+                {
+                    let scale = 0.025;
+                    //this._camera.rotation.order = 'XYZ';
+                    //this._camera.rotation.order = 'XZY';
+                    //this._camera.rotation.order = 'YXZ';
+                    //this._camera.rotation.order = 'YZX';
+                    //this._camera.rotation.order = 'ZXY';
+                    //this._camera.rotation.order = 'ZYX';
+
+                    
+                    this._camera.rotateY(-input.getMouseSpeed()[0] * scale);
+                    this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
+
+                }
+            }
+        }
+    }
+
     public get scene(): THREE.Scene { return this._level.scene; }
 
     public get camera(): THREE.PerspectiveCamera | THREE.OrthographicCamera { return this._camera; }

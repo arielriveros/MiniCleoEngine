@@ -1,5 +1,6 @@
 import Stats from "stats.js";
 import { Renderer } from "./rendering/renderer";
+import { InputManager } from './input/manager';
 import { Game } from "../game/game";
 
 
@@ -8,6 +9,7 @@ export class Engine
     private _stats: Stats;
     private _game: Game;
     private _renderer: Renderer;
+    private _input: InputManager;
 
     constructor(engineElement: string)
     {
@@ -17,10 +19,12 @@ export class Engine
         
         this._game = new Game();
         this._renderer = new Renderer(engineElement, this._game.scene, this._game.camera);
+        this._input = new InputManager();
     }
 
     public initialize(): void
     {
+        this._input.initialize();
         this._renderer.initialize();
         this._game.initialize();
         this.update();
@@ -32,6 +36,7 @@ export class Engine
     public update(): void
     {
         this._stats.begin();
+        this._game.inputListener(this._input);
         this._game.update();
         this._renderer.update();
         this._stats.end();
