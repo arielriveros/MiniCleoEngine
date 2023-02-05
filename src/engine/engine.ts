@@ -1,5 +1,5 @@
 import Stats from "stats.js";
-import { Renderer } from "./renderer";
+import { Renderer } from "./rendering/renderer";
 import { Game } from "../game/game";
 
 
@@ -32,8 +32,8 @@ export class Engine
     public update(): void
     {
         this._stats.begin();
-        this._renderer.update();
         this._game.update();
+        this._renderer.update();
         this._stats.end();
         requestAnimationFrame(this.update.bind(this));
     }
