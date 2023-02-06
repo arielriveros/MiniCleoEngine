@@ -17,7 +17,7 @@ export class Level
 
     public addEntity(entity: Entity): void
     {
-        entity.level = this;
+        entity.onAddToLevel(this);
         this._entities.push(entity);
     }
 

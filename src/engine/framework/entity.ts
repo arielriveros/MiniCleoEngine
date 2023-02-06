@@ -40,9 +40,6 @@ export class Entity
 
     public addComponent(component: Component): void
     {
-        if(component instanceof MeshComponent)
-            this._level.scene.add(component.mesh);
-
         this._components.push(component);
         component.parent = this;
     }
@@ -53,7 +50,16 @@ export class Entity
             this._components[i].update();
     }
 
+    public onAddToLevel(level: Level): void
+    {
+        this._level = level;
+        this._components.forEach(component => 
+            {
+                if(component instanceof MeshComponent)
+                    this._level.scene.add(component.mesh);
+            });
+    }
+
     public get level(): Level { return this._level; }
-    public set level(level: Level) { this._level = level; }
 
 }

@@ -35,9 +35,8 @@ export class Game
         cubeMeshComponent.mesh.castShadow = true;
         cubeMeshComponent.mesh.receiveShadow = true;
         cubeMeshComponent.mesh.name = "cube";
-        cubeEntity.position = [0, 2, -1];
-        this._level.addEntity(cubeEntity);
         cubeEntity.addComponent(cubeMeshComponent);
+        this._level.addEntity(cubeEntity);
 
         Loader.loadGLTF('assets/models/sponza.glb', this._level.scene);
         Loader.loadGLTF('assets/models/zombie.glb', this._level.scene);
