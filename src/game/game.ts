@@ -21,7 +21,7 @@ export class Game
         this._camera.rotation.set(0, 3.14/2, 0);
     }
 
-    public initialize(): void
+    public async initialize(): Promise<void>
     {
         const cubeEntity = new Entity({name: "cube", position: [0, 2, -1], scale: [1, 1, 1]});
         const cubeMeshComponent = new MeshComponent(new THREE.Mesh( 
@@ -38,8 +38,21 @@ export class Game
         cubeEntity.addComponent(cubeMeshComponent);
         this._level.addEntity(cubeEntity);
 
-        Loader.loadGLTF('assets/models/sponza.glb', this._level.scene);
-        Loader.loadGLTF('assets/models/zombie.glb', this._level.scene);
+        const sponza = new Entity({name: "sponza", position: [0, 0, 0], scale: [1, 1, 1]});
+        sponza.addComponent(
+            new MeshComponent(
+                await Loader.loadGLTF('assets/models/sponza.glb')
+            )
+        );
+        this._level.addEntity(sponza);
+
+        const zombie = new Entity({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]});
+        zombie.addComponent(
+            new MeshComponent(
+                await Loader.loadGLTF('assets/models/zombie.glb')
+            )
+        );
+        this._level.addEntity(zombie);
         
         this._level.scene.add( new THREE.AxesHelper( 5 ));
         // add lights

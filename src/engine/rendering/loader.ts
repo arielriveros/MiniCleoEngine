@@ -28,7 +28,7 @@ export class Loader
         } );
     }
 
-    public static loadGLTF(path: string, scene: THREE.Scene): void
+    private _loadGLTF(path: string, scene: THREE.Scene): void
     {
         const gltfLoader = new GLTFLoader();
         gltfLoader.load(path, (gltf) => {
@@ -60,5 +60,40 @@ export class Loader
                 console.log(error)
             }
         )
+    }
+
+    public static loadGLTF(path: string): Promise<THREE.Group>
+    {
+        return new Promise((resolve, reject) => {
+            const gltfLoader = new GLTFLoader();
+            gltfLoader.load(path, (gltf) => {
+                gltf.scene.traverse(function (child) {
+                    if ((child as THREE.Mesh).isMesh) {
+                        const m = (child as THREE.Mesh)
+                        m.receiveShadow = true;
+                        m.castShadow = true;
+                        m.frustumCulled = false;
+                        let material = m.material as THREE.Material;
+                        //material.shadowSide = THREE.DoubleSide;
+                        //material.shadowSide = THREE.FrontSide;
+                        //material.side = THREE.FrontSide;
+                    }
+                    /* if (((child as THREE.Light)).isLight) {
+                        const l = (child as THREE.Light)
+                        l.castShadow = true
+                        l.shadow.bias = -.03
+                        l.shadow.mapSize.width = 2048
+                        l.shadow.mapSize.height = 2048
+                    } */
+                })
+                resolve(gltf.scene);
+            },
+            (xhr) => {
+                //console.log(xhr.loaded);
+            },
+            (error) => {
+                reject(error);
+            })
+        });
     }
 }
