@@ -1,6 +1,9 @@
 
 import { InputManager, Level, Loader, THREE } from 'core';
 import { DirectionalLight } from '../engine/framework/DirectionalLight';
+import { Entity } from '../engine/framework/entity';
+import { MeshComponent } from '../engine/framework/meshComponent';
+import { quat } from 'gl-matrix';
 
 export class Game 
 {
@@ -20,23 +23,25 @@ export class Game
 
     public initialize(): void
     {
-        const cube = new THREE.Mesh( 
+        const cubeEntity = new Entity({name: "cube", position: [0, 2, -1], scale: [1, 1, 1]});
+        const cubeMeshComponent = new MeshComponent(new THREE.Mesh( 
             new THREE.BoxGeometry( 1, 1, 1 ), 
             new THREE.MeshStandardMaterial( {
                 color: 0x00ff00,
                 roughness: 0.7,
                 metalness: 1 
             } ) 
-        );
-        cube.castShadow = true;
-        cube.receiveShadow = true;
-        cube.name = "cube";
-        cube.position.set(0, 2, -1);
+        ));
+        cubeMeshComponent.mesh.castShadow = true;
+        cubeMeshComponent.mesh.receiveShadow = true;
+        cubeMeshComponent.mesh.name = "cube";
+        cubeEntity.position = [0, 2, -1];
+        this._level.addEntity(cubeEntity);
+        cubeEntity.addComponent(cubeMeshComponent);
 
         Loader.loadGLTF('assets/models/sponza.glb', this._level.scene);
         Loader.loadGLTF('assets/models/zombie.glb', this._level.scene);
         
-        this._level.scene.add( cube );
         this._level.scene.add( new THREE.AxesHelper( 5 ));
         // add lights
         this._pointLight = new THREE.PointLight( 0xff0000, 15, 2);
@@ -77,11 +82,15 @@ export class Game
 
     public update(): void
     {
-        const cube = this._level.scene.getObjectByName("cube");
+        this._level.update();
+
+        const cube = this._level.getEntityByName("cube");//this._level.scene.getObjectByName("cube");
         if(cube)
         {
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
+            cube.position[0] = Math.sin(Date.now() / 1000);
+
+            quat.add(cube.rotation, cube.rotation, [0, 0.001, 0, 0]);
+
         }
 
         if(this._spotLight)
@@ -129,13 +138,13 @@ export class Game
                     //this._camera.rotation.order = 'XYZ';
                     //this._camera.rotation.order = 'XZY';
                     //this._camera.rotation.order = 'YXZ';
-                    //this._camera.rotation.order = 'YZX';
+                    this._camera.rotation.order = 'YZX';
                     //this._camera.rotation.order = 'ZXY';
                     //this._camera.rotation.order = 'ZYX';
 
                     
-                    this._camera.rotateY(-input.getMouseSpeed()[0] * scale);
-                    //this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
+                    this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
+                    //this._camera.rotateY(-input.getMouseSpeed()[0] * scale);
 
                 }
             }
