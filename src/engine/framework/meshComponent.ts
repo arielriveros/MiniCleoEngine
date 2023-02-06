@@ -20,8 +20,9 @@ export class MeshComponent extends Component
         super.update();
         this._mesh.position.set(this.parent.position[0], this.parent.position[1], this.parent.position[2]);
         //console.log("Parent: [" + this.parent.position.toLocaleString() + "]\n" + "Mesh: [" + this._mesh.position.x + ", " + this._mesh.position.y + ", " + this._mesh.position.z + "]");
-        let quat = new THREE.Quaternion(this.parent.rotation[0], this.parent.rotation[1], this.parent.rotation[2], this.parent.rotation[3]);
-        this._mesh.rotation.setFromQuaternion(quat.clone());
+        //let quat = new THREE.Quaternion(this.parent.rotation[0], this.parent.rotation[1], this.parent.rotation[2], this.parent.rotation[3]);
+        //this._mesh.rotation.setFromQuaternion(quat.clone());
+        this._mesh.rotation.set(this.parent.rotation[0], this.parent.rotation[1], this.parent.rotation[2]);
         this._mesh.scale.set(this.parent.scale[0], this.parent.scale[1], this.parent.scale[2]);
     }
 

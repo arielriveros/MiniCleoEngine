@@ -62,7 +62,7 @@ export class Game
         this._level.scene.add( this._spotLight );
 
         this._directionalLight = new DirectionalLight( 0xffffff, 10);
-        this._directionalLight.light.position.set( 0, 5, 0 );
+        this._directionalLight.light.position.set( 0, 15, 0 );
         
         const directionalHelper = new THREE.DirectionalLightHelper( this._directionalLight.light, 1 );
         const shadowFrustrumHelper = new THREE.CameraHelper( this._directionalLight.light.shadow.camera );
@@ -88,8 +88,16 @@ export class Game
         if(cube)
         {
             cube.position[0] = Math.sin(Date.now() / 1000);
+            cube.position[1] = Math.sin(Date.now() / 2000) + 2;
+            cube.position[2] = Math.cos(Date.now() / 2000);
 
-            quat.add(cube.rotation, cube.rotation, [0, 0.001, 0, 0]);
+            cube.rotation[0] += 0.01;
+            cube.rotation[1] += 0.01;
+            cube.rotation[2] += 0.01;
+
+            cube.scale[0] = Math.sin(Date.now() / 1000)/2 + 0.5;
+            cube.scale[1] = Math.sin(Date.now() / 1000)/2 + 0.5;
+            cube.scale[2] = Math.cos(Date.now() / 1000)/2 + 0.5;
 
         }
 
@@ -143,8 +151,8 @@ export class Game
                     //this._camera.rotation.order = 'ZYX';
 
                     
-                    this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
-                    //this._camera.rotateY(-input.getMouseSpeed()[0] * scale);
+                    //this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
+                    this._camera.rotateY(-input.getMouseSpeed()[0] * scale);
 
                 }
             }

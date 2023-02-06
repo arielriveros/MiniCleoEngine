@@ -7,7 +7,7 @@ interface EntityParameters
 {
     name?: string;
     position?: vec3;
-    rotation?: quat;
+    rotation?: vec3;
     scale?: vec3;
 }
 
@@ -16,7 +16,7 @@ export class Entity
     private _level!: Level;
     private _name!: string;
     private _position: vec3;
-    private _rotation: quat;
+    private _rotation: vec3;
     private _scale: vec3;
     private _components: Component[];
 
@@ -24,7 +24,7 @@ export class Entity
     {
         this._name = params.name || "Entity";
         this._position = params.position || vec3.create();
-        this._rotation = params.rotation || quat.create();
+        this._rotation = params.rotation || vec3.create();
         this._scale    = params.scale ||vec3.create();
         this._components = [];
     }
@@ -33,8 +33,8 @@ export class Entity
     public set name(name: string) { this._name = name; }
     public get position(): vec3 { return this._position; }
     public set position(position: vec3) { this._position = position; }
-    public get rotation(): quat { return this._rotation; }
-    public set rotation(rotation: quat) { this._rotation = rotation; }
+    public get rotation(): vec3 { return this._rotation; }
+    public set rotation(rotation: vec3) { this._rotation = rotation; }
     public get scale(): vec3 { return this._scale; }
     public set scale(scale: vec3) { this._scale = scale; }
 
