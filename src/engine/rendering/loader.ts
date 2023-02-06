@@ -1,4 +1,4 @@
-import { Scene } from 'three';
+import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
@@ -35,9 +35,13 @@ export class Loader
                 gltf.scene.traverse(function (child) {
                     if ((child as THREE.Mesh).isMesh) {
                         const m = (child as THREE.Mesh)
-                        m.receiveShadow = true
-                        m.castShadow = true
+                        m.receiveShadow = true;
+                        m.castShadow = true;
                         m.frustumCulled = false;
+                        let material = m.material as THREE.Material;
+                        //material.shadowSide = THREE.DoubleSide;
+                        //material.shadowSide = THREE.FrontSide;
+                        //material.side = THREE.FrontSide;
                     }
                     /* if (((child as THREE.Light)).isLight) {
                         const l = (child as THREE.Light)
@@ -50,7 +54,7 @@ export class Loader
                 scene.add(gltf.scene);
             },
             (xhr) => {
-                console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+                //console.log(xhr.loaded);
             },
             (error) => {
                 console.log(error)

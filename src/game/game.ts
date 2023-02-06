@@ -1,6 +1,6 @@
 
 import { InputManager, Level, Loader, THREE } from 'core';
-import { Quaternion } from 'three';
+import { DirectionalLight } from '../engine/framework/DirectionalLight';
 
 export class Game 
 {
@@ -8,7 +8,7 @@ export class Game
     private _camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
     private _pointLight!: THREE.PointLight;
     private _spotLight!: THREE.SpotLight;
-    private _directionalLight!: THREE.DirectionalLight;
+    private _directionalLight!: DirectionalLight;
 
     constructor()
     {
@@ -33,7 +33,6 @@ export class Game
         cube.name = "cube";
         cube.position.set(0, 2, -1);
 
-        // Loader.loadFBX('assets/models/well_FBX.fbx');
         Loader.loadGLTF('assets/models/sponza.glb', this._level.scene);
         Loader.loadGLTF('assets/models/zombie.glb', this._level.scene);
         
@@ -53,15 +52,20 @@ export class Game
         this._spotLight = new THREE.SpotLight( 0xffffff, 1 );
         this._spotLight.position.set( 0, 3, 0 );
         this._spotLight.castShadow = true;
-        this._spotLight.shadow.mapSize.width = 2048;
-        this._spotLight.shadow.mapSize.height = 2048;
+        this._spotLight.shadow.mapSize.width = 1024;
+        this._spotLight.shadow.mapSize.height = 1024;
         this._level.scene.add( this._spotLight );
 
-        this._directionalLight = new THREE.DirectionalLight( 0xffffff, 2);
-        this._directionalLight.position.set( 0, 1, 1 );
-        this._directionalLight.castShadow = true;
+        this._directionalLight = new DirectionalLight( 0xffffff, 10);
+        this._directionalLight.light.position.set( 0, 5, 0 );
+        
+        const directionalHelper = new THREE.DirectionalLightHelper( this._directionalLight.light, 1 );
+        const shadowFrustrumHelper = new THREE.CameraHelper( this._directionalLight.light.shadow.camera );
 
-        this._level.scene.add( this._directionalLight );
+
+        this._level.scene.add( this._directionalLight.light );
+        this._level.scene.add( directionalHelper );
+        this._level.scene.add( shadowFrustrumHelper );
 
         const skyBox = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), new THREE.MeshBasicMaterial( { color: 0x89CFF0} ) );
         skyBox.material.side = THREE.BackSide;
@@ -73,21 +77,6 @@ export class Game
 
     public update(): void
     {
-        window.addEventListener( 'keydown', ( event ) => {
-            if(event.key == "w")
-                this._camera.translateZ(-0.001);
-            else if(event.key == "s")
-                this._camera.translateZ(0.001);
-            else if(event.key == "a")
-                this._camera.position.x -= 0.001;
-            else if(event.key == "d")
-                this._camera.position.x += 0.0001;
-            else if(event.key == "q")
-                this._camera.rotation.y += 0.0001;
-            else if(event.key == "e")
-                this._camera.rotation.y -= 0.0001;
-        }, false);
-
         const cube = this._level.scene.getObjectByName("cube");
         if(cube)
         {
@@ -104,6 +93,12 @@ export class Game
         if(this._pointLight)
         {
             this._pointLight.position.x = Math.sin(Date.now() / 1000) * 10;
+        }
+
+        if(this._directionalLight)
+        {
+            this._directionalLight.light.position.x = Math.sin(Date.now() / 10000) * 2;
+            this._directionalLight.light.position.z = Math.cos(Date.now() / 10000) * 2;
         }
     }
     
@@ -140,7 +135,7 @@ export class Game
 
                     
                     this._camera.rotateY(-input.getMouseSpeed()[0] * scale);
-                    this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
+                    //this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
 
                 }
             }
