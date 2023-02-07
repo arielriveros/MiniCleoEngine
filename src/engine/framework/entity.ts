@@ -3,7 +3,7 @@ import { Level } from "./level";
 import { Component } from "./component";
 import { MeshComponent } from "./meshComponent";
 
-interface EntityParameters
+export interface EntityParameters
 {
     name?: string;
     position?: vec3;

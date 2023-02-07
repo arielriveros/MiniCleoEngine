@@ -3,7 +3,7 @@ import { InputManager, Level, Loader, THREE } from 'core';
 import { DirectionalLight } from '../engine/framework/DirectionalLight';
 import { Entity } from '../engine/framework/entity';
 import { MeshComponent } from '../engine/framework/meshComponent';
-import { quat } from 'gl-matrix';
+import { Character } from '../engine/framework/character';
 
 export class Game 
 {
@@ -54,12 +54,7 @@ export class Game
         );
         this._level.addEntity(helmet);
 
-        const zombie = new Entity({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]});
-        zombie.addComponent(
-            new MeshComponent(
-                await Loader.loadGLTF('assets/models/zombie.glb')
-            )
-        );
+        const zombie = new Character({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]}, await Loader.loadGLTF('assets/models/zombie.glb'));
         this._level.addEntity(zombie);
         
         this._level.scene.add( new THREE.AxesHelper( 5 ));
