@@ -46,6 +46,14 @@ export class Game
         );
         this._level.addEntity(sponza);
 
+        const helmet = new Entity({name: "helmet", position: [-1, 2, 0], scale: [0.5, 0.5, 0.5]});
+        helmet.addComponent(
+            new MeshComponent(
+                await Loader.loadGLTF('assets/models/DamagedHelmet.glb')
+            )
+        );
+        this._level.addEntity(helmet);
+
         const zombie = new Entity({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]});
         zombie.addComponent(
             new MeshComponent(
@@ -63,7 +71,7 @@ export class Game
         const ambientLight = new THREE.AmbientLight( 0xffffff, 0.005 );
         //this._scene.add( ambientLight );
 
-        const hemisphericLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1 );
+        const hemisphericLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.5 );
         this._level.scene.add( hemisphericLight );
 
         this._spotLight = new THREE.SpotLight( 0xffffff, 1 );
@@ -73,7 +81,7 @@ export class Game
         this._spotLight.shadow.mapSize.height = 1024;
         this._level.scene.add( this._spotLight );
 
-        this._directionalLight = new DirectionalLight( 0xffffff, 10);
+        this._directionalLight = new DirectionalLight( 0xffffff, 25);
         this._directionalLight.light.position.set( 0, 15, 0 );
         
         const directionalHelper = new THREE.DirectionalLightHelper( this._directionalLight.light, 1 );
@@ -96,7 +104,7 @@ export class Game
     {
         this._level.update();
 
-        const cube = this._level.getEntityByName("cube");//this._level.scene.getObjectByName("cube");
+        const cube = this._level.getEntityByName("cube");
         if(cube)
         {
             cube.position[0] = Math.sin(Date.now() / 1000);
@@ -111,6 +119,12 @@ export class Game
             cube.scale[1] = Math.sin(Date.now() / 1000)/2 + 0.5;
             cube.scale[2] = Math.cos(Date.now() / 1000)/2 + 0.5;
 
+        }
+
+        const helmet = this._level.getEntityByName("helmet");
+        if(helmet)
+        {
+            helmet.rotation[1] += 0.01;
         }
 
         if(this._spotLight)

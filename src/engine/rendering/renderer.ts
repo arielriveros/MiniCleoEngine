@@ -39,7 +39,7 @@ export class Renderer
         //this._renderer.toneMapping = THREE.ReinhardToneMapping;
         this._renderer.toneMapping = THREE.CineonToneMapping;
         //this._renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this._renderer.toneMappingExposure = 2.4;
+        this._renderer.toneMappingExposure = 2.7;
 
         this._renderer.physicallyCorrectLights = true;
         document.getElementById(engineElement)?.appendChild( this._renderer.domElement );
