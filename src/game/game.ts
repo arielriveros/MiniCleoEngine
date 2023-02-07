@@ -4,6 +4,7 @@ import { DirectionalLight } from '../engine/framework/DirectionalLight';
 import { Entity } from '../engine/framework/entity';
 import { MeshComponent } from '../engine/framework/meshComponent';
 import { Character } from '../engine/framework/character';
+import { Sun } from './sun';
 
 export class Game 
 {
@@ -11,7 +12,6 @@ export class Game
     private _camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
     private _pointLight!: THREE.PointLight;
     private _spotLight!: THREE.SpotLight;
-    private _directionalLight!: DirectionalLight;
 
     constructor()
     {
@@ -76,16 +76,17 @@ export class Game
         this._spotLight.shadow.mapSize.height = 1024;
         this._level.scene.add( this._spotLight );
 
-        this._directionalLight = new DirectionalLight( 0xffffff, 25);
-        this._directionalLight.light.position.set( 0, 15, 0 );
         
-        const directionalHelper = new THREE.DirectionalLightHelper( this._directionalLight.light, 1 );
-        const shadowFrustrumHelper = new THREE.CameraHelper( this._directionalLight.light.shadow.camera );
+        //const directionalHelper = new THREE.DirectionalLightHelper( this._directionalLight.light, 1 );
+        //const shadowFrustrumHelper = new THREE.CameraHelper( this._directionalLight.light.shadow.camera );
+        
+        
+        //this._level.scene.add( this._directionalLight.light );
+        //this._level.scene.add( directionalHelper );
+        //this._level.scene.add( shadowFrustrumHelper );
 
-
-        this._level.scene.add( this._directionalLight.light );
-        this._level.scene.add( directionalHelper );
-        this._level.scene.add( shadowFrustrumHelper );
+        const sun = new Sun();
+        this._level.addEntity(sun);
 
         const skyBox = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), new THREE.MeshBasicMaterial( { color: 0x89CFF0} ) );
         skyBox.material.side = THREE.BackSide;
@@ -133,11 +134,6 @@ export class Game
             this._pointLight.position.x = Math.sin(Date.now() / 1000) * 10;
         }
 
-        if(this._directionalLight)
-        {
-            this._directionalLight.light.position.x = Math.sin(Date.now() / 10000) * 2;
-            this._directionalLight.light.position.z = Math.cos(Date.now() / 10000) * 2;
-        }
     }
     
     public inputListener(input: InputManager): void

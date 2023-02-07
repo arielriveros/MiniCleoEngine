@@ -1,5 +1,6 @@
 import { Scene } from 'three';
 import { Entity } from './entity';
+import { DirectionalLight } from './DirectionalLight';
 
 export class Level
 {
@@ -18,6 +19,10 @@ export class Level
     public addEntity(entity: Entity): void
     {
         entity.onAddToLevel(this);
+        if(entity instanceof DirectionalLight)
+        {
+            this._scene.add(entity.light);
+        }
         this._entities.push(entity);
     }
 
