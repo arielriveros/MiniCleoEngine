@@ -9,4 +9,5 @@ export abstract class Component
     public set parent(parent: Entity) { this._parent = parent; }
 
     public update(): void {}
+    public destroy(): void {}
 }

@@ -51,5 +51,16 @@ export class Level
             this._entities[i].update();
     }
     
-    
+    destroyEntityByName(entityName: string)
+    {
+        for(let i = 0; i < this._entities.length; i++)
+        {
+            if(this._entities[i].name === entityName)
+            {
+                this._entities[i].destroy();
+                this._entities.splice(i, 1);
+                break;
+            }
+        }
+    }
 }

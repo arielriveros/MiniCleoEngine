@@ -38,7 +38,7 @@ export class Game
         this._level.addEntity(zombie);
         
         //this._level.scene.add( new THREE.AxesHelper( 5 ));
-        
+
         // add lights
         const pointLight1 = new MovingLight(0xff0000, [0, 0.5, 0]);
         const pointLight2 = new MovingLight(0x00ff00, [0, 0.5, 0]);
@@ -126,8 +126,9 @@ export class Game
             }
         }
 
-        input.OnKeyPress('KeyW', () => {
-            console.log("KeyW pressed");
+        input.OnKeyPress('KeyT', () => {
+            console.log("KeyT pressed");
+            this._level.destroyEntityByName("helmet");
         });
 
         

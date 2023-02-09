@@ -60,6 +60,32 @@ export class Entity
             });
     }
 
+    public getComponent<T extends Component>(type: { new(): T }): T | undefined
+    {
+        for(let i = 0; i < this._components.length; i++)
+        {
+            if(this._components[i] instanceof type)
+                return this._components[i] as T;
+        }
+        return undefined;
+    }
+
+    public getComponents<T extends Component>(type: { new(): T }): T[]
+    {
+        let components: T[] = [];
+        for(let i = 0; i < this._components.length; i++)
+        {
+            if(this._components[i] instanceof type)
+                components.push(this._components[i] as T);
+        }
+        return components;
+    }
+
+    public destroy()
+    {
+        this._components.forEach(component => component.destroy());
+    }
+
     public get level(): Level { return this._level; }
 
 }

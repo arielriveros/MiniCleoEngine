@@ -23,5 +23,10 @@ export class MeshComponent extends Component
         this._mesh.scale.set(this.parent.scale[0], this.parent.scale[1], this.parent.scale[2]);
     }
 
+    public override destroy(): void
+    {
+        super.destroy();
+        this._mesh.parent?.remove(this._mesh);
+    }
 
 }
