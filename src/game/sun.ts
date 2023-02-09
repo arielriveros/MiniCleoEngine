@@ -1,4 +1,4 @@
-import { DirectionalLight } from "../engine/framework/DirectionalLight";
+import { DirectionalLight } from "../engine/framework/directionalLight";
 
 export class Sun extends DirectionalLight
 {

@@ -1,11 +1,11 @@
 
 import { InputManager, Level, Loader, THREE } from 'core';
-import { DirectionalLight } from '../engine/framework/DirectionalLight';
 import { Entity } from '../engine/framework/entity';
 import { MeshComponent } from '../engine/framework/meshComponent';
 import { Character } from '../engine/framework/character';
 import { Sun } from './sun';
 import { Cube } from './cube';
+import { MovingLight } from './movingPointLight';
 
 export class Game 
 {
@@ -28,19 +28,11 @@ export class Game
         this._level.addEntity(cube);
 
         const sponza = new Entity({name: "sponza", position: [0, 0, 0], scale: [1, 1, 1]});
-        sponza.addComponent(
-            new MeshComponent(
-                await Loader.loadGLTF('assets/models/sponza.glb')
-            )
-        );
+        sponza.addComponent(new MeshComponent(await Loader.loadGLTF('assets/models/sponza.glb')));
         this._level.addEntity(sponza);
 
         const helmet = new Entity({name: "helmet", position: [-1, 2, 0], scale: [0.5, 0.5, 0.5]});
-        helmet.addComponent(
-            new MeshComponent(
-                await Loader.loadGLTF('assets/models/DamagedHelmet.glb')
-            )
-        );
+        helmet.addComponent(new MeshComponent(await Loader.loadGLTF('assets/models/DamagedHelmet.glb')));
         this._level.addEntity(helmet);
 
         const zombie = new Character({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]}, await Loader.loadGLTF('assets/models/zombie.glb'));
@@ -48,9 +40,12 @@ export class Game
         
         this._level.scene.add( new THREE.AxesHelper( 5 ));
         // add lights
-        this._pointLight = new THREE.PointLight( 0xff0000, 15, 2);
-        this._pointLight.position.set( 0, 0.5, 0 );
-        this._level.scene.add( this._pointLight );
+        const pointLight1 = new MovingLight(0xff0000, [0, 0.5, 0]);
+        const pointLight2 = new MovingLight(0x00ff00, [0, 0.5, 0]);
+        const pointLight3 = new MovingLight(0x0000ff, [0, 0.5, 0]);
+        this._level.addEntity( pointLight1 );
+        this._level.addEntity( pointLight2 );
+        this._level.addEntity( pointLight3 );
 
         const ambientLight = new THREE.AmbientLight( 0xffffff, 0.005 );
         //this._scene.add( ambientLight );
@@ -96,10 +91,6 @@ export class Game
             this._spotLight.position.x = Math.sin(Date.now() / 1000) * 2;
             this._spotLight.position.z = Math.cos(Date.now() / 1000) * 2;
         }
-
-        if(this._pointLight)
-            this._pointLight.position.x = Math.sin(Date.now() / 1000) * 10;
-
     }
     
     public inputListener(input: InputManager): void
