@@ -140,6 +140,12 @@ export class Game
                 }
             }
         }
+
+        input.OnKeyPress('KeyW', () => {
+            console.log("KeyW pressed");
+        });
+
+        
     }
 
     public get scene(): THREE.Scene { return this._level.scene; }

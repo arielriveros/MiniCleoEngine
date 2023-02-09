@@ -79,4 +79,12 @@ export class InputManager {
     public isMouseMoving(): boolean {
         return MouseHandler.mouseSpeed[0] != 0 || MouseHandler.mouseSpeed[1] != 0;
     }
+
+    public OnKeyPress(code: string, callback: () => void): void
+    {
+        if (KeyHandler.onKeyPressedOnce(code)) {
+            callback();
+        }
+    }
+
 }
