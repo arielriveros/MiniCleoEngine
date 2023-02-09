@@ -92,4 +92,30 @@ export class Entity
         return quat.fromEuler(quat.create(), this._rotation[0], this._rotation[1], this._rotation[2]);
     }
 
+    public moveForward(distance: number): void
+    {
+        let q = this.getQuaternion();
+        let forward = vec3.fromValues(0, 0, -1);
+        vec3.transformQuat(forward, forward, q);
+        vec3.scale(forward, forward, distance);
+        vec3.add(this._position, this._position, forward);
+    }
+
+    public moveRight(distance: number)
+    {
+        let q = this.getQuaternion();
+        let right = vec3.fromValues(1, 0, 0);
+        vec3.transformQuat(right, right, q);
+        vec3.scale(right, right, -distance);
+        vec3.add(this._position, this._position, right);
+    }
+
+    public moveUp(distance: number)
+    {
+        let q = this.getQuaternion();
+        let up = vec3.fromValues(0, 1, 0);
+        vec3.transformQuat(up, up, q);
+        vec3.scale(up, up, distance);
+        vec3.add(this._position, this._position, up);
+    }
 }
