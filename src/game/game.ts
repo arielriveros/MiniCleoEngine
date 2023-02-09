@@ -5,6 +5,7 @@ import { Entity } from '../engine/framework/entity';
 import { MeshComponent } from '../engine/framework/meshComponent';
 import { Character } from '../engine/framework/character';
 import { Sun } from './sun';
+import { Cube } from './cube';
 
 export class Game 
 {
@@ -23,20 +24,8 @@ export class Game
 
     public async initialize(): Promise<void>
     {
-        const cubeEntity = new Entity({name: "cube", position: [0, 2, -1], scale: [1, 1, 1]});
-        const cubeMeshComponent = new MeshComponent(new THREE.Mesh( 
-            new THREE.BoxGeometry( 1, 1, 1 ), 
-            new THREE.MeshStandardMaterial( {
-                color: 0x00ff00,
-                roughness: 0.7,
-                metalness: 1 
-            } ) 
-        ));
-        cubeMeshComponent.mesh.castShadow = true;
-        cubeMeshComponent.mesh.receiveShadow = true;
-        cubeMeshComponent.mesh.name = "cube";
-        cubeEntity.addComponent(cubeMeshComponent);
-        this._level.addEntity(cubeEntity);
+        const cube = new Cube()
+        this._level.addEntity(cube);
 
         const sponza = new Entity({name: "sponza", position: [0, 0, 0], scale: [1, 1, 1]});
         sponza.addComponent(
@@ -80,8 +69,6 @@ export class Game
         //const directionalHelper = new THREE.DirectionalLightHelper( this._directionalLight.light, 1 );
         //const shadowFrustrumHelper = new THREE.CameraHelper( this._directionalLight.light.shadow.camera );
         
-        
-        //this._level.scene.add( this._directionalLight.light );
         //this._level.scene.add( directionalHelper );
         //this._level.scene.add( shadowFrustrumHelper );
 
@@ -100,28 +87,9 @@ export class Game
     {
         this._level.update();
 
-        const cube = this._level.getEntityByName("cube");
-        if(cube)
-        {
-            cube.position[0] = Math.sin(Date.now() / 1000);
-            cube.position[1] = Math.sin(Date.now() / 2000) + 2;
-            cube.position[2] = Math.cos(Date.now() / 2000);
-
-            cube.rotation[0] += 0.01;
-            cube.rotation[1] += 0.01;
-            cube.rotation[2] += 0.01;
-
-            cube.scale[0] = Math.sin(Date.now() / 1000)/2 + 0.5;
-            cube.scale[1] = Math.sin(Date.now() / 1000)/2 + 0.5;
-            cube.scale[2] = Math.cos(Date.now() / 1000)/2 + 0.5;
-
-        }
-
         const helmet = this._level.getEntityByName("helmet");
         if(helmet)
-        {
             helmet.rotation[1] += 0.01;
-        }
 
         if(this._spotLight)
         {
@@ -130,9 +98,7 @@ export class Game
         }
 
         if(this._pointLight)
-        {
             this._pointLight.position.x = Math.sin(Date.now() / 1000) * 10;
-        }
 
     }
     
