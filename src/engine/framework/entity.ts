@@ -37,6 +37,7 @@ export class Entity
     public set rotation(rotation: vec3) { this._rotation = rotation; }
     public get scale(): vec3 { return this._scale; }
     public set scale(scale: vec3) { this._scale = scale; }
+    public get level(): Level { return this._level; }
 
     public addComponent(component: Component): void
     {
@@ -86,6 +87,9 @@ export class Entity
         this._components.forEach(component => component.destroy());
     }
 
-    public get level(): Level { return this._level; }
+    public getQuaternion(): quat
+    {
+        return quat.fromEuler(quat.create(), this._rotation[0], this._rotation[1], this._rotation[2]);
+    }
 
 }
