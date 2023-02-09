@@ -94,19 +94,22 @@ export class Entity
 
     public moveForward(distance: number): void
     {
-        let q = this.getQuaternion();
-        let forward = vec3.fromValues(0, 0, -1);
-        vec3.transformQuat(forward, forward, q);
+        let x: number = Math.cos(this.rotation[0]) * Math.sin(this.rotation[1]);
+        let y: number = -Math.sin(this.rotation[0]);
+        let z: number = Math.cos(this.rotation[0]) * Math.cos(this.rotation[1]);
+
+        let forward = vec3.fromValues(x, y, z);
         vec3.scale(forward, forward, distance);
         vec3.add(this._position, this._position, forward);
     }
 
     public moveRight(distance: number)
     {
-        let q = this.getQuaternion();
-        let right = vec3.fromValues(1, 0, 0);
-        vec3.transformQuat(right, right, q);
-        vec3.scale(right, right, -distance);
+        let x: number = Math.sin(this.rotation[1] - Math.PI / 2);
+        let z: number = Math.cos(this.rotation[1] - Math.PI / 2);
+        
+        let right = vec3.fromValues(x, 0, z);
+        vec3.scale(right, right, distance);
         vec3.add(this._position, this._position, right);
     }
 
@@ -117,5 +120,10 @@ export class Entity
         vec3.transformQuat(up, up, q);
         vec3.scale(up, up, distance);
         vec3.add(this._position, this._position, up);
+    }
+
+    public rotateY(angle: number)
+    {
+        this._rotation[1] += angle;
     }
 }

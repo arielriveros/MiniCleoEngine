@@ -126,6 +126,36 @@ export class Game
             }
         }
 
+        if(input.isKeyDown('KeyW'))
+        {
+            this._level.getEntityByName("zombie")?.moveForward(0.05);
+        }
+
+        if(input.isKeyDown('KeyS'))
+        {
+            this._level.getEntityByName("zombie")?.moveForward(-0.05);
+        }
+
+        if(input.isKeyDown('KeyA'))
+        {
+            this._level.getEntityByName("zombie")?.moveRight(-0.05);
+        }
+
+        if(input.isKeyDown('KeyD'))
+        {
+            this._level.getEntityByName("zombie")?.moveRight(0.05);
+        }
+
+        if(input.isKeyDown('KeyQ'))
+        {
+            this._level.getEntityByName("zombie")?.rotateY(0.05);
+        }
+
+        if(input.isKeyDown('KeyE'))
+        {
+            this._level.getEntityByName("zombie")?.rotateY(-0.05);
+        }
+
         input.OnKeyPress('KeyT', () => {
             this._level.destroyEntityByName("helmet");
         });
