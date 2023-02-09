@@ -11,7 +11,6 @@ export class Game
 {
     private _level: Level;
     private _camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
-    private _pointLight!: THREE.PointLight;
     private _spotLight!: THREE.SpotLight;
 
     constructor()
@@ -38,14 +37,15 @@ export class Game
         const zombie = new Character({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]}, await Loader.loadGLTF('assets/models/zombie.glb'));
         this._level.addEntity(zombie);
         
-        this._level.scene.add( new THREE.AxesHelper( 5 ));
+        //this._level.scene.add( new THREE.AxesHelper( 5 ));
+        
         // add lights
         const pointLight1 = new MovingLight(0xff0000, [0, 0.5, 0]);
         const pointLight2 = new MovingLight(0x00ff00, [0, 0.5, 0]);
         const pointLight3 = new MovingLight(0x0000ff, [0, 0.5, 0]);
-        this._level.addEntity( pointLight1 );
-        this._level.addEntity( pointLight2 );
-        this._level.addEntity( pointLight3 );
+        const sun = new Sun();
+
+        this._level.addEntities([sun, pointLight1, pointLight2, pointLight3])
 
         const ambientLight = new THREE.AmbientLight( 0xffffff, 0.005 );
         //this._scene.add( ambientLight );
@@ -67,13 +67,7 @@ export class Game
         //this._level.scene.add( directionalHelper );
         //this._level.scene.add( shadowFrustrumHelper );
 
-        const sun = new Sun();
-        this._level.addEntity(sun);
-
         const skyBox = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), new THREE.MeshBasicMaterial( { color: 0x89CFF0} ) );
-        skyBox.material.side = THREE.BackSide;
-        skyBox.position.set(0, 0, 0);
-        skyBox.receiveShadow = false;
         this._level.scene.add( skyBox );
 
     }

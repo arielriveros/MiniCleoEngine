@@ -29,6 +29,12 @@ export class Level
         this._entities.push(entity);
     }
 
+    public addEntities(entities: Entity[]): void
+    {
+        for(let i = 0; i < entities.length; i++)
+            this.addEntity(entities[i]);
+    }
+
     public getEntityByName(name: string): Entity | undefined
     {
         for(let i = 0; i < this._entities.length; i++)
