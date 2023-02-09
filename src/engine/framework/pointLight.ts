@@ -31,4 +31,10 @@ export class PointLight extends Entity
         this._light.rotation.set(this.rotation[0], this.rotation[1], this.rotation[2]);
         this._light.scale.set(this.scale[0], this.scale[1], this.scale[2]);
     }
+
+    public override destroy(): void
+    {
+        super.destroy();
+        this._light.parent?.remove(this._light);
+    }
 }

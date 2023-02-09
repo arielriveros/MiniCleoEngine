@@ -51,7 +51,7 @@ export class Level
             this._entities[i].update();
     }
     
-    destroyEntityByName(entityName: string)
+    public destroyEntityByName(entityName: string)
     {
         for(let i = 0; i < this._entities.length; i++)
         {

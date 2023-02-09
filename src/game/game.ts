@@ -127,10 +127,16 @@ export class Game
         }
 
         input.OnKeyPress('KeyT', () => {
-            console.log("KeyT pressed");
             this._level.destroyEntityByName("helmet");
         });
 
+        input.OnKeyPress('KeyY', () => {
+            this._level.destroyEntityByName("MovingLight");
+        });
+
+        input.OnKeyPress('KeyU', () => {
+            this._level.destroyEntityByName("sponza");
+        });
         
     }
 

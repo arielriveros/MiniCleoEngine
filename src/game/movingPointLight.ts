@@ -7,7 +7,7 @@ export class MovingLight extends PointLight
 
     constructor(color: number, initialPosition: [number, number, number])
     {
-        super(color, 1, 1, 5, false, {name: "MovingLight", position: initialPosition, rotation: [0, 0, 0]});
+        super(color, 1, 5, 1, true, {name: "MovingLight", position: initialPosition, rotation: [0, 0, 0]});
         this._xAmplitude = Math.random() * 10;
         this._zAmplitude = Math.random() * 2;
     }
