@@ -17,8 +17,9 @@ export class Game
     {
         this._level = new Level();
         this._camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.001, 1000 );
-        this._camera.position.set(5, 1.5, 0);
-        this._camera.rotation.set(0, 3.14/2, 0);
+        this._camera.position.set(0, 1, 0);
+        //this._camera.position.set(5, 1.5, 0);
+        //this._camera.rotation.set(0, 3.14/2, 0);
     }
 
     public async initialize(): Promise<void>
@@ -35,17 +36,21 @@ export class Game
         this._level.addEntity(helmet);
 
         const zombie = new Character({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]}, await Loader.loadGLTF('assets/models/zombie.glb'));
+        (zombie.getComponent('MeshComponent') as MeshComponent ).mesh.add(this._camera);
+        this._camera.position.setZ(zombie.position[2]);
         this._level.addEntity(zombie);
+
+        
         
         //this._level.scene.add( new THREE.AxesHelper( 5 ));
 
         // add lights
         const pointLight1 = new MovingLight(0xff0000, [0, 0.5, 0]);
-        const pointLight2 = new MovingLight(0x00ff00, [0, 0.5, 0]);
-        const pointLight3 = new MovingLight(0x0000ff, [0, 0.5, 0]);
+        //const pointLight2 = new MovingLight(0x00ff00, [0, 0.5, 0]);
+        //const pointLight3 = new MovingLight(0x0000ff, [0, 0.5, 0]);
         const sun = new Sun();
 
-        this._level.addEntities([sun, pointLight1, pointLight2, pointLight3])
+        this._level.addEntities([sun, pointLight1,/*  pointLight2, pointLight3 */])
 
         const ambientLight = new THREE.AmbientLight( 0xffffff, 0.005 );
         //this._scene.add( ambientLight );
@@ -75,6 +80,9 @@ export class Game
     public update(): void
     {
         this._level.update();
+
+            //zombie.getComponent('MeshComponent')?.mesh.rotation.y += 0.01;
+            //this._camera.lookAt(zombie.position[0], zombie.position[1], zombie.position[2]);
 
         const helmet = this._level.getEntityByName("helmet");
         if(helmet)

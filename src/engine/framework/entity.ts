@@ -2,6 +2,8 @@ import { vec3, quat } from "gl-matrix";
 import { Level } from "./level";
 import { Component } from "./component";
 import { MeshComponent } from "./meshComponent";
+import { CameraComponent } from "./cameraComponent";
+import {Object3D} from "three";
 
 export interface EntityParameters
 {
@@ -19,6 +21,7 @@ export class Entity
     private _rotation: vec3;
     private _scale: vec3;
     private _components: Component[];
+    private _root: Object3D;
 
     constructor(params: EntityParameters = {})
     {
@@ -27,6 +30,7 @@ export class Entity
         this._rotation = params.rotation || vec3.create();
         this._scale    = params.scale ||vec3.create();
         this._components = [];
+        this._root = new Object3D();
     }
 
     public get name(): string { return this._name; }
@@ -43,10 +47,15 @@ export class Entity
     {
         this._components.push(component);
         component.parent = this;
+        if(component instanceof MeshComponent)
+            this._root.add(component.mesh);
+        if (component instanceof CameraComponent)
+            this._root.add(component.camera);
     }
 
     public update(): void
     {
+        this._root.position.set(this._position[0], this._position[1], this._position[2]);
         for(let i = 0; i < this._components.length; i++)
             this._components[i].update();
     }
@@ -54,19 +63,15 @@ export class Entity
     public onAddToLevel(level: Level): void
     {
         this._level = level;
-        this._components.forEach(component => 
-            {
-                if(component instanceof MeshComponent)
-                    this._level.scene.add(component.mesh);
-            });
+        this._level.scene.add(this._root);
     }
 
-    public getComponent<T extends Component>(type: { new(): T }): T | undefined
+    public getComponent(type: string): Component | undefined
     {
         for(let i = 0; i < this._components.length; i++)
         {
-            if(this._components[i] instanceof type)
-                return this._components[i] as T;
+            if(this._components[i] instanceof MeshComponent && type === "MeshComponent")
+                return this._components[i] as MeshComponent;
         }
         return undefined;
     }
