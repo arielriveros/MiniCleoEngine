@@ -56,6 +56,7 @@ export class Entity
     public update(): void
     {
         this._root.position.set(this._position[0], this._position[1], this._position[2]);
+        this._root.rotation.set(this._rotation[0], this._rotation[1], this._rotation[2]);
         for(let i = 0; i < this._components.length; i++)
             this._components[i].update();
     }

@@ -18,9 +18,6 @@ export class MeshComponent extends Component
     public override update(): void
     {
         super.update();
-        this._mesh.position.set(this.parent.position[0], this.parent.position[1], this.parent.position[2]);
-        this._mesh.rotation.set(this.parent.rotation[0], this.parent.rotation[1], this.parent.rotation[2]);
-        this._mesh.scale.set(this.parent.scale[0], this.parent.scale[1], this.parent.scale[2]);
     }
 
     public override destroy(): void

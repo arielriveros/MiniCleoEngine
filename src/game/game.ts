@@ -6,6 +6,8 @@ import { Character } from '../engine/framework/character';
 import { Sun } from './sun';
 import { Cube } from './cube';
 import { MovingLight } from './movingPointLight';
+import { CameraComponent } from '../engine/framework/cameraComponent';
+import { vec3 } from 'gl-matrix';
 
 export class Game 
 {
@@ -36,8 +38,7 @@ export class Game
         this._level.addEntity(helmet);
 
         const zombie = new Character({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]}, await Loader.loadGLTF('assets/models/zombie.glb'));
-        (zombie.getComponent('MeshComponent') as MeshComponent ).mesh.add(this._camera);
-        this._camera.position.setZ(zombie.position[2]);
+        zombie.addComponent(new CameraComponent(this._camera, vec3.fromValues(zombie.position[0], 2, zombie.position[2] - 2), vec3.fromValues(0, 3.14, 0)));
         this._level.addEntity(zombie);
 
         

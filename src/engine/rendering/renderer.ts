@@ -28,6 +28,8 @@ export class Renderer
 
         this._renderer.shadowMap.enabled = true;
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this._renderer.setPixelRatio( window.devicePixelRatio );
+
         //this._renderer.shadowMap.type = THREE.BasicShadowMap;
         //this._renderer.shadowMap.type = THREE.PCFShadowMap; 
         //this._renderer.shadowMap.type = THREE.VSMShadowMap; 
