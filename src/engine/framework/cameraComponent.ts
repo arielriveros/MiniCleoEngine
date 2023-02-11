@@ -18,12 +18,14 @@ export class CameraComponent extends Component
     public override update(): void
     {
         super.update();
-        this._camera.lookAt(this.parent.position[0], this.parent.position[1] + 2, this.parent.position[2])
+        this._camera.lookAt(this.parent.position[0], this.parent.position[1] + 2, this.parent.position[2]);
     }
 
     public override destroy(): void
     {
         super.destroy();
+        this._camera.position.set(0, 0, 0);
+        this._camera.rotation.set(0, 0, 0);
         this._camera.parent?.remove(this._camera);
     }
 }

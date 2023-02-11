@@ -27,6 +27,7 @@ export class Engine
         this._input.initialize();
         this._renderer.initialize();
         this._game.initialize();
+        this._game.input = this._input;
         this.update();
     }
 
@@ -36,7 +37,6 @@ export class Engine
     public update(): void
     {
         this._stats.begin();
-        this._game.inputListener(this._input);
         this._game.update();
         this._renderer.update();
         this._stats.end();

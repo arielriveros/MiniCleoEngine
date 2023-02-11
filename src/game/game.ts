@@ -8,21 +8,23 @@ import { Cube } from './cube';
 import { MovingLight } from './movingPointLight';
 import { CameraComponent } from '../engine/framework/cameraComponent';
 import { vec3 } from 'gl-matrix';
+import { Player } from './player';
 
 export class Game 
 {
     private _level: Level;
     private _camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
     private _spotLight!: THREE.SpotLight;
+    private _input!: InputManager;
 
     constructor()
     {
         this._level = new Level();
         this._camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.001, 1000 );
         this._camera.position.set(0, 1, 0);
-        //this._camera.position.set(5, 1.5, 0);
-        //this._camera.rotation.set(0, 3.14/2, 0);
     }
+
+    public set input(input: InputManager) { this._input = input; }
 
     public async initialize(): Promise<void>
     {
@@ -37,13 +39,8 @@ export class Game
         helmet.addComponent(new MeshComponent(await Loader.loadGLTF('assets/models/DamagedHelmet.glb')));
         this._level.addEntity(helmet);
 
-        const zombie = new Character({name: "zombie", position: [0, 0, 0], scale: [1, 1, 1]}, await Loader.loadGLTF('assets/models/zombie.glb'));
-        zombie.addComponent(new CameraComponent(this._camera, vec3.fromValues(zombie.position[0], 2, zombie.position[2] - 2), vec3.fromValues(0, 3.14, 0)));
-        this._level.addEntity(zombie);
-
-        
-        
-        //this._level.scene.add( new THREE.AxesHelper( 5 ));
+        const player = new Player(this._input, this._camera, await Loader.loadGLTF('assets/models/zombie.glb'));
+        this._level.addEntity(player);
 
         // add lights
         const pointLight1 = new MovingLight(0xff0000, [0, 0.5, 0]);
@@ -66,24 +63,21 @@ export class Game
         this._spotLight.shadow.mapSize.height = 1024;
         this._level.scene.add( this._spotLight );
 
+        const skyBox = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), new THREE.MeshBasicMaterial( { color: 0x89CFF0} ) );
+        this._level.scene.add( skyBox );
         
         //const directionalHelper = new THREE.DirectionalLightHelper( this._directionalLight.light, 1 );
         //const shadowFrustrumHelper = new THREE.CameraHelper( this._directionalLight.light.shadow.camera );
         
         //this._level.scene.add( directionalHelper );
         //this._level.scene.add( shadowFrustrumHelper );
-
-        const skyBox = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), new THREE.MeshBasicMaterial( { color: 0x89CFF0} ) );
-        this._level.scene.add( skyBox );
-
+        //this._level.scene.add( new THREE.AxesHelper( 5 ));
     }
 
     public update(): void
     {
+        this.inputListener();
         this._level.update();
-
-            //zombie.getComponent('MeshComponent')?.mesh.rotation.y += 0.01;
-            //this._camera.lookAt(zombie.position[0], zombie.position[1], zombie.position[2]);
 
         const helmet = this._level.getEntityByName("helmet");
         if(helmet)
@@ -94,30 +88,31 @@ export class Game
             this._spotLight.position.x = Math.sin(Date.now() / 1000) * 2;
             this._spotLight.position.z = Math.cos(Date.now() / 1000) * 2;
         }
+        
     }
     
-    public inputListener(input: InputManager): void
+    public inputListener(): void
     {
-        if(input.isMouseMoving())
+        if(this._input.isMouseMoving())
         {
-            let bothPressed: boolean = input.isMouseButtonPressed('Left') && input.isMouseButtonPressed('Right')
+            let bothPressed: boolean = this._input.isMouseButtonPressed('Left') && this._input.isMouseButtonPressed('Right')
             if(bothPressed)
             {
                 let scale = 0.005;
-                this._camera.translateX(input.getMouseSpeed()[0] * scale );
-                this._camera.translateY(-input.getMouseSpeed()[1] * scale );
+                this._camera.translateX(this._input.getMouseSpeed()[0] * scale );
+                this._camera.translateY(-this._input.getMouseSpeed()[1] * scale );
             }
             else
             {
 
-                if(input.isMouseButtonPressed('Left'))
+                if(this._input.isMouseButtonPressed('Left'))
                 {
                     let scale = 0.01;
-                    this._camera.translateX(input.getMouseSpeed()[0] * scale);
-                    this._camera.translateZ(input.getMouseSpeed()[1] * scale);
+                    this._camera.translateX(this._input.getMouseSpeed()[0] * scale);
+                    this._camera.translateZ(this._input.getMouseSpeed()[1] * scale);
                 }
             
-                if(input.isMouseButtonPressed('Right'))
+                if(this._input.isMouseButtonPressed('Right'))
                 {
                     let scale = 0.025;
                     //this._camera.rotation.order = 'XYZ';
@@ -129,51 +124,25 @@ export class Game
 
                     
                     //this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
-                    this._camera.rotateY(-input.getMouseSpeed()[0] * scale);
+                    this._camera.rotateY(-this._input.getMouseSpeed()[0] * scale);
 
                 }
             }
         }
 
-        if(input.isKeyDown('KeyW'))
-        {
-            this._level.getEntityByName("zombie")?.moveForward(0.05);
-        }
+        this._input.OnKeyPress('KeyR', () => {
+            this._level.destroyEntityByName("zombie");
+        });
 
-        if(input.isKeyDown('KeyS'))
-        {
-            this._level.getEntityByName("zombie")?.moveForward(-0.05);
-        }
-
-        if(input.isKeyDown('KeyA'))
-        {
-            this._level.getEntityByName("zombie")?.moveRight(-0.05);
-        }
-
-        if(input.isKeyDown('KeyD'))
-        {
-            this._level.getEntityByName("zombie")?.moveRight(0.05);
-        }
-
-        if(input.isKeyDown('KeyQ'))
-        {
-            this._level.getEntityByName("zombie")?.rotateY(0.05);
-        }
-
-        if(input.isKeyDown('KeyE'))
-        {
-            this._level.getEntityByName("zombie")?.rotateY(-0.05);
-        }
-
-        input.OnKeyPress('KeyT', () => {
+        this._input.OnKeyPress('KeyT', () => {
             this._level.destroyEntityByName("helmet");
         });
 
-        input.OnKeyPress('KeyY', () => {
+        this._input.OnKeyPress('KeyY', () => {
             this._level.destroyEntityByName("MovingLight");
         });
 
-        input.OnKeyPress('KeyU', () => {
+        this._input.OnKeyPress('KeyU', () => {
             this._level.destroyEntityByName("sponza");
         });
         
