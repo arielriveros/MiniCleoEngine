@@ -43,14 +43,16 @@ export class Entity
     public set scale(scale: vec3) { this._scale = scale; }
     public get level(): Level { return this._level; }
 
-    public addComponent(component: Component): void
+    public addComponent(component: Component): Component
     {
         this._components.push(component);
         component.parent = this;
-        if(component instanceof MeshComponent)
+        if (component instanceof MeshComponent)
             this._root.add(component.mesh);
         if (component instanceof CameraComponent)
             this._root.add(component.camera);
+
+        return component;
     }
 
     public update(): void

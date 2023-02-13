@@ -93,7 +93,7 @@ export class Game
     
     public inputListener(): void
     {
-        if(this._input.isMouseMoving())
+        /* if(this._input.isMouseMoving())
         {
             let bothPressed: boolean = this._input.isMouseButtonPressed('Left') && this._input.isMouseButtonPressed('Right')
             if(bothPressed)
@@ -128,7 +128,7 @@ export class Game
 
                 }
             }
-        }
+        } */
 
         this._input.OnKeyPress('KeyR', () => {
             this._level.destroyEntityByName("zombie");

@@ -18,7 +18,6 @@ export class CameraComponent extends Component
     public override update(): void
     {
         super.update();
-        this._camera.lookAt(this.parent.position[0], this.parent.position[1] + 2, this.parent.position[2]);
     }
 
     public override destroy(): void
@@ -27,5 +26,40 @@ export class CameraComponent extends Component
         this._camera.position.set(0, 0, 0);
         this._camera.rotation.set(0, 0, 0);
         this._camera.parent?.remove(this._camera);
+    }
+
+    public moveForward(distance: number): void
+    {
+        this._camera.translateZ(distance);
+    }
+
+    public moveRight(distance: number): void
+    {
+        this._camera.translateX(distance);
+    }
+
+    public moveUp(distance: number): void
+    {
+        this._camera.translateY(distance);
+    }
+
+    public rotateX(angle: number): void
+    {
+        this._camera.rotateX(angle);
+    }
+
+    public rotateY(angle: number): void
+    {
+        this._camera.rotateY(angle);
+    }
+
+    public rotateZ(angle: number): void
+    {
+        this._camera.rotateZ(angle);
+    }
+
+    public lookAt(pos: vec3): void
+    {
+        this._camera.lookAt(pos[0], pos[1], pos[2]);
     }
 }
