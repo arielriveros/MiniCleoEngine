@@ -2,20 +2,25 @@ import { Scene } from 'three';
 import { Entity } from './entity';
 import { DirectionalLight } from './directionalLight';
 import { PointLight } from './pointLight';
+import { PhysicsManager } from '../physics/physicsManager';
 
 export class Level
 {
     private _scene: Scene;
     private _entities: Entity[];
+    private _physics!: PhysicsManager;
 
     constructor()
     {
-        this._scene = new Scene();
+        this._scene = new Scene();   
         this._entities = [];
     }
 
     public get scene(): Scene { return this._scene; }
     public get entities(): Entity[] { return this._entities; }
+
+    public get physics(): PhysicsManager { return this._physics; }
+    public set physics(physics: PhysicsManager) { this._physics = physics; }
 
     public addEntity(entity: Entity): void
     {
@@ -45,10 +50,17 @@ export class Level
         return undefined;
     }
 
-    public update(): void
+    public addPhysicalBody(body: any)
+    {
+        if(body)
+            this._physics.addBody(body);
+    }
+
+    public update(deltaTime: number): void
     {
         for(let i = 0; i < this._entities.length; i++)
             this._entities[i].update();
+        this._physics.update(deltaTime);
     }
     
     public destroyEntityByName(entityName: string)

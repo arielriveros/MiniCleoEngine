@@ -1,25 +1,31 @@
 import { AMMO } from "./physicsManager";
 
 type ShapeType = 'box' | 'sphere' | 'cylinder' | 'capsule';
-interface BoxOptions
+interface BaseOptions
 {
-    width: number;  // x
-    height: number; // y
-    depth: number;  // z
+    margin?: number;
 }
 
-interface SphereOptions
+interface BoxOptions extends BaseOptions
+{
+    width?: number;  // x
+    height?: number; // y
+    depth?: number;  // z
+    margin?: number;
+}
+
+interface SphereOptions extends BaseOptions
 {
     radius: number;
 }
 
-interface CylinderOptions
+interface CylinderOptions extends BaseOptions
 {
     radius: number;
     height: number;
 }
 
-interface CapsuleOptions
+interface CapsuleOptions extends BaseOptions
 {
     radius: number;
     height: number;
@@ -29,15 +35,18 @@ type ShapeOptions = BoxOptions | SphereOptions | CylinderOptions | CapsuleOption
 export class Shape
 {
     private _type: ShapeType;
+    
     private _shape: any;
     
-    constructor(type: ShapeType, options: ShapeOptions)
+    constructor(type: ShapeType, options: ShapeOptions = {})
     {
         this._type = type;
         switch (this._type) {
             case 'box':
-                let boxOptions: BoxOptions = options as BoxOptions;
-                this._shape = new AMMO.btBoxShape(new AMMO.btVector3(boxOptions.width, boxOptions.height, boxOptions.depth));
+                const height = (options as BoxOptions).height || 1;
+                const width  = (options as BoxOptions).width  || 1;
+                const depth  = (options as BoxOptions).depth  || 1;
+                this._shape = new AMMO.btBoxShape(new AMMO.btVector3(width || 1, height || 1, depth || 1));
                 break;
             case 'sphere':
                 let sphereOptions: SphereOptions = options as SphereOptions;
@@ -56,10 +65,13 @@ export class Shape
                 this._shape = new AMMO.btBoxShape(new AMMO.btVector3(1, 1, 1));
                 break;
         }
+        this._shape.setMargin(options.margin || 0.04);
     }
 
     /**
      * Returns a shape usable by Ammo.js
      */
-    public get shape(): any { return this._shape; }
+    public get physicalShape(): any { return this._shape; }
 }
+
+export { BoxOptions, SphereOptions, CylinderOptions, CapsuleOptions, ShapeOptions, ShapeType };
