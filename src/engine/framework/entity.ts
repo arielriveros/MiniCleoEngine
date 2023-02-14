@@ -4,6 +4,7 @@ import { Component } from "./component";
 import { MeshComponent } from "./meshComponent";
 import { CameraComponent } from "./cameraComponent";
 import {Object3D} from "three";
+import { RigidBodyComponent } from "./rigidBodyComponent";
 
 export interface EntityParameters
 {
@@ -42,16 +43,19 @@ export class Entity
     public get scale(): vec3 { return this._scale; }
     public set scale(scale: vec3) { this._scale = scale; }
     public get level(): Level { return this._level; }
+    public get root(): Object3D { return this._root; }
 
     public addComponent(component: Component): Component
     {
-        this._components.push(component);
         component.parent = this;
+        this._components.push(component);
+        console.log(component.parent);
+        component.initialize();
         if (component instanceof MeshComponent)
             this._root.add(component.mesh);
         if (component instanceof CameraComponent)
             this._root.add(component.camera);
-
+            
         return component;
     }
 
@@ -67,6 +71,7 @@ export class Entity
     {
         this._level = level;
         this._level.scene.add(this._root);
+        this._level.addPhysicalBody(this);
     }
 
     public getComponent(type: string): Component | undefined
@@ -75,19 +80,14 @@ export class Entity
         {
             if(this._components[i] instanceof MeshComponent && type === "MeshComponent")
                 return this._components[i] as MeshComponent;
+
+            if(this._components[i] instanceof CameraComponent && type === "CameraComponent")
+                return this._components[i] as CameraComponent;
+
+            if(this._components[i] instanceof RigidBodyComponent && type === "RigidBodyComponent")
+                return this._components[i] as RigidBodyComponent;
         }
         return undefined;
-    }
-
-    public getComponents<T extends Component>(type: { new(): T }): T[]
-    {
-        let components: T[] = [];
-        for(let i = 0; i < this._components.length; i++)
-        {
-            if(this._components[i] instanceof type)
-                components.push(this._components[i] as T);
-        }
-        return components;
     }
 
     public destroy()

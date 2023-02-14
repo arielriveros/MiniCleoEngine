@@ -2,13 +2,11 @@
 import { InputManager, Level, Loader, THREE } from 'core';
 import { Entity } from '../engine/framework/entity';
 import { MeshComponent } from '../engine/framework/meshComponent';
-import { Character } from '../engine/framework/character';
 import { Sun } from './sun';
 import { Cube } from './cube';
 import { MovingLight } from './movingPointLight';
-import { CameraComponent } from '../engine/framework/cameraComponent';
-import { vec3 } from 'gl-matrix';
 import { Player } from './player';
+import { PhysicsManager } from 'src/engine/physics/physicsManager';
 
 export class Game 
 {
@@ -24,7 +22,8 @@ export class Game
         this._camera.position.set(0, 1, 0);
     }
 
-    public set input(input: InputManager) { this._input = input; }
+    public setInput(input: InputManager) { this._input = input; }
+    public setLevelPhysics(physics: PhysicsManager) { this._level.physics = physics; }
 
     public async initialize(): Promise<void>
     {
@@ -39,7 +38,7 @@ export class Game
         helmet.addComponent(new MeshComponent(await Loader.loadGLTF('assets/models/DamagedHelmet.glb')));
         this._level.addEntity(helmet);
 
-        const player = new Player(this._input, this._camera, await Loader.loadGLTF('assets/models/zombie.glb'));
+        const player = new Player({position: [0, 10, 0]},this._input, this._camera, await Loader.loadGLTF('assets/models/zombie.glb'));
         this._level.addEntity(player);
 
         // add lights
@@ -74,10 +73,10 @@ export class Game
         //this._level.scene.add( new THREE.AxesHelper( 5 ));
     }
 
-    public update(): void
+    public update(deltaTime: number): void
     {
         this.inputListener();
-        this._level.update();
+        this._level.update(deltaTime);
 
         const helmet = this._level.getEntityByName("helmet");
         if(helmet)
@@ -93,43 +92,6 @@ export class Game
     
     public inputListener(): void
     {
-        /* if(this._input.isMouseMoving())
-        {
-            let bothPressed: boolean = this._input.isMouseButtonPressed('Left') && this._input.isMouseButtonPressed('Right')
-            if(bothPressed)
-            {
-                let scale = 0.005;
-                this._camera.translateX(this._input.getMouseSpeed()[0] * scale );
-                this._camera.translateY(-this._input.getMouseSpeed()[1] * scale );
-            }
-            else
-            {
-
-                if(this._input.isMouseButtonPressed('Left'))
-                {
-                    let scale = 0.01;
-                    this._camera.translateX(this._input.getMouseSpeed()[0] * scale);
-                    this._camera.translateZ(this._input.getMouseSpeed()[1] * scale);
-                }
-            
-                if(this._input.isMouseButtonPressed('Right'))
-                {
-                    let scale = 0.025;
-                    //this._camera.rotation.order = 'XYZ';
-                    //this._camera.rotation.order = 'XZY';
-                    //this._camera.rotation.order = 'YXZ';
-                    this._camera.rotation.order = 'YZX';
-                    //this._camera.rotation.order = 'ZXY';
-                    //this._camera.rotation.order = 'ZYX';
-
-                    
-                    //this._camera.rotateX(-input.getMouseSpeed()[1] * scale);
-                    this._camera.rotateY(-this._input.getMouseSpeed()[0] * scale);
-
-                }
-            }
-        } */
-
         this._input.OnKeyPress('KeyR', () => {
             this._level.destroyEntityByName("zombie");
         });
