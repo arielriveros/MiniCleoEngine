@@ -2,6 +2,7 @@ import Stats from "stats.js";
 import { Renderer } from "./rendering/renderer";
 import { InputManager } from './input/manager';
 import { Game } from "../game/game";
+import { PhysicsManager } from "./physics/physicsManager";
 
 
 export class Engine
@@ -10,6 +11,7 @@ export class Engine
     private _game: Game;
     private _renderer: Renderer;
     private _input: InputManager;
+    private _physics: PhysicsManager;
 
     constructor(engineElement: string)
     {
@@ -20,14 +22,17 @@ export class Engine
         this._game = new Game();
         this._renderer = new Renderer(engineElement, this._game.scene, this._game.camera);
         this._input = new InputManager();
+        this._physics = new PhysicsManager();
     }
 
-    public initialize(): void
+    public async initialize(): Promise<void>
     {
         this._input.initialize();
         this._renderer.initialize();
+        await this._physics.initialize();
         this._game.initialize();
         this._game.input = this._input;
+
         this.update();
     }
 

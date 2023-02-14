@@ -15,13 +15,12 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.js'],
         alias: {
+            path: require.resolve('path-browserify'),
             core: path.resolve(__dirname, 'src/engine/core.ts')
+        },
+        fallback: {
+            "fs": false
         }
-        /* alias: {
-            math: path.resolve(__dirname, 'src/core/math/math.ts'),
-            core: path.resolve(__dirname, 'src/core/core.ts'),
-            utils: path.resolve(__dirname, 'src/core/utilities/utils.ts'),
-        } */
     },
     output: {
         publicPath: 'auto',
