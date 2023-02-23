@@ -39,9 +39,15 @@ class GameLevel1 extends Level
     {
         super('GameLevel1');
         const gameMap = new GameMap();
-        gameMap.background = new THREE.Color(0x000000);
+        
+        
+        gameMap.background = new THREE.Color(0.25, 0.25, 0.8);
 
-        const camera = new THREE.PerspectiveCamera(75, 4/3, 0.0001, 1000);
+        const height = window.innerHeight;
+        const width = window.innerWidth;
+        const ratio = width / height;
+
+        const camera = new THREE.PerspectiveCamera(75, ratio, 0.0001, 1000);
         camera.position.z = 5;
         camera.position.y = 2;
         const cube: THREE.Mesh = new THREE.Mesh(
@@ -132,7 +138,7 @@ class GameLevel1 extends Level
 
 const level1 = new GameLevel1();
 
-let engine = new Engine({context: 'game-context'});
+let engine = new Engine({context: 'game-context', fullscreen: true});
 engine.addLevel(level1);
 engine.setActiveLevel('GameLevel1');
 engine.start();

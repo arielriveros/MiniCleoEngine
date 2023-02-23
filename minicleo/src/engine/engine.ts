@@ -8,6 +8,7 @@ import Stats from "stats.js";
 interface EngineParameters
 {
     context: string;
+    fullscreen: boolean;
 }
 
 /**
@@ -19,6 +20,7 @@ class Engine
     private _renderer!: Renderer;
     private _levelManager!: LevelManager;
     private _stats: Stats;
+    private _renderContext: HTMLCanvasElement;
     
     constructor(parameters: EngineParameters)
     {
@@ -28,21 +30,37 @@ class Engine
         this._stats.showPanel(0);
         document.body.appendChild(this._stats.dom);
 
+        this._renderContext = document.getElementById(parameters.context) as HTMLCanvasElement;
+
         this.setUp(parameters);
     }
 
     private setUp(parameters: EngineParameters)
     {
-        const renderContext = document.getElementById(parameters.context) as HTMLCanvasElement;
-        if(renderContext === null)
+        
+        if(this._renderContext === null)
             throw new Error(`Render context from id '${parameters.context}' is null: Provide a canvas element with the id '${parameters.context}'.`);
             
+        if(parameters.fullscreen)
+        {
+            let width = window.innerWidth;
+            let height = window.innerHeight;
+
+            console.log(`Width: ${width}, Height: ${height}`);
+            this._renderContext.style.display = "flex";
+            this._renderContext.style.width = width.toString() + "px";
+            this._renderContext.style.height = height.toString() + "px";
+            this._renderContext.width = width;
+            this._renderContext.height = height;
+            
+        }
         this._levelManager = new LevelManager();
         this._modules.push(this._levelManager);
 
-        this._renderer = new Renderer(renderContext, this._levelManager);
+        this._renderer = new Renderer(this._renderContext, this._levelManager);
         this._modules.push(this._renderer);
 
+        
     }
 
     /**
