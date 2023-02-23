@@ -2,6 +2,7 @@ import { Module } from "./module";
 import { Renderer } from "../rendering/renderer";
 import { Level } from "../level/level";
 import { LevelManager } from "../level/levelManager";
+import Stats from "stats.js";
 
 
 interface EngineParameters
@@ -17,10 +18,16 @@ class Engine
     private _modules: Array<Module>;
     private _renderer!: Renderer;
     private _levelManager!: LevelManager;
+    private _stats: Stats;
     
     constructor(parameters: EngineParameters)
     {
         this._modules = new Array<Module>();
+
+        this._stats = new Stats();
+        this._stats.showPanel(0);
+        document.body.appendChild(this._stats.dom);
+
         this.setUp(parameters);
     }
 
@@ -71,10 +78,10 @@ class Engine
 
     private mainLoop()
     {
+        this._stats.begin();
         for(let module of this._modules)
             module.update();
-
-        
+        this._stats.end();
 
         requestAnimationFrame(this.mainLoop.bind(this));
     }
