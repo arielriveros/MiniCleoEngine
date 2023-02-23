@@ -2,6 +2,11 @@ node_modules
 public/app.js
 public/assets
 
+game/public/app.js
+game/public/assets
+
+minicleo/build
+
 .vs
 .vscode
 dist
