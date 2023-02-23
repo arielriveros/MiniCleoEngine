@@ -16,20 +16,6 @@ class Player extends Entity
 
     public override update(): void
     {
-        window.addEventListener('keydown', (event) => {
-            if(event.key == 'w')
-                this.translateZ(0.001);
-            if(event.key == 's')
-                this.translateZ(-0.001);
-            if(event.key == 'q')
-                this.translateX(-0.001);
-            if(event.key == 'e')
-                this.translateX(0.001);
-            if(event.key == 'a')
-                this.rotateY(0.001);
-            if(event.key == 'd')
-                this.rotateY(-0.001);
-        });
     }
 }
 
@@ -147,6 +133,32 @@ class GameLevel1 extends Level
                 this.camera.rotateY(-event.deltaX * 0.01);
             }
         };
+        this.input.keyboard.onKeyDownCallback = (code) => {
+            switch(code)
+            {
+                case 'KeyW':
+                    player.translateZ(0.1);
+                    break;
+                case 'KeyS':
+                    player.translateZ(-0.1);
+                    break;
+                case 'KeyA':
+                    player.rotateY(0.1);
+                    break;
+                case 'KeyD':
+                    player.rotateY(-0.1);
+                    break;
+                case 'KeyQ':
+                    player.translateX(0.1);
+                    break;
+                case 'KeyE':
+                    player.translateX(-0.1);
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 
     public override update(): void {

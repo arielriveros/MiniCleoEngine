@@ -31,11 +31,6 @@ export class MouseManager
         window.addEventListener("mousedown", (event) => this.onMouseDown(event));
         window.addEventListener("mouseup", (event) => this.onMouseUp(event));
         window.addEventListener("contextmenu", (event) => event.preventDefault());
-
-        // lock the mouse to the center of the screen
-        let canvas = document.getElementById('game-context');
-        if(canvas)
-            canvas.requestPointerLock = canvas.requestPointerLock || (canvas as any).mozRequestPointerLock;
     }
 
     private reset()
