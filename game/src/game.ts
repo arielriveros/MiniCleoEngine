@@ -116,9 +116,37 @@ class GameLevel1 extends Level
         this.gameMap = gameMap;
         this.camera = camera;
 
-        window.addEventListener('wheel', (event) => {
-            camera.position.z += event.deltaY * 0.001;
-        });
+        gameMap.add(camera);
+
+        const pointLightWhite = new THREE.PointLight(0xffffff, 10, 100);
+        pointLightWhite.name = "PointLightW";
+        pointLightWhite.position.set(0, 0.5, 0);
+        gameMap.add(pointLightWhite);
+        
+        const pointLightRed = new THREE.PointLight(0xff0000, 10, 100);
+        pointLightRed.name = "PointLightR";
+        pointLightRed.position.set(0, 0.5, 0);
+        gameMap.add(pointLightRed);
+        
+
+        this.input.mouse.mouseMoveCallback = (event) => {
+            if(event.mouseButtons[0] && event.mouseButtons[2])
+            {
+                this.camera.translateY(-event.deltaY * 0.025);
+                this.camera.translateX(event.deltaX * 0.01);
+            }
+
+            else if(event.mouseButtons[0])
+            {
+                this.camera.translateZ(event.deltaY * 0.01);
+                this.camera.translateX(event.deltaX * 0.01);
+            }
+
+            else if(event.mouseButtons[2])
+            {
+                this.camera.rotateY(-event.deltaX * 0.01);
+            }
+        };
     }
 
     public override update(): void {
@@ -132,6 +160,15 @@ class GameLevel1 extends Level
         const directionalLight = this.gameMap.getObjectByName('DirectionalLight') as THREE.DirectionalLight;
         directionalLight.position.x = Math.sin(Date.now() / 1000) * 5;
         directionalLight.position.z = Math.cos(Date.now() / 1000) * 10;
+
+        const pointLight = this.gameMap.getObjectByName('PointLightW') as THREE.PointLight;
+        pointLight.position.x = Math.sin(Date.now() / 1000) * 5;
+        pointLight.position.z = Math.cos(Date.now() / 1000) * 10;
+
+        const pointLight2 = this.gameMap.getObjectByName('PointLightR') as THREE.PointLight;
+        pointLight2.position.x = Math.sin(Date.now() / 1000) * -5;
+        pointLight2.position.y = Math.cos(Date.now() / 1000) + 0.5;
+        pointLight2.position.z = Math.cos(Date.now() / 1000) * -10;
 
     }
 }

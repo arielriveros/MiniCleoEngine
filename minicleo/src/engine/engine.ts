@@ -3,6 +3,7 @@ import { Renderer } from "../rendering/renderer";
 import { Level } from "../level/level";
 import { LevelManager } from "../level/levelManager";
 import Stats from "stats.js";
+import { InputController } from "../input/inputController";
 
 
 interface EngineParameters
@@ -19,6 +20,7 @@ class Engine
     private _modules: Array<Module>;
     private _renderer!: Renderer;
     private _levelManager!: LevelManager;
+    private _inputController!: InputController;
     private _stats: Stats;
     private _renderContext: HTMLCanvasElement;
     
