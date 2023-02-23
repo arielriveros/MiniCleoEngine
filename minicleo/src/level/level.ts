@@ -1,4 +1,5 @@
-import { Scene, Camera } from "three";
+import { Camera } from "three";
+import { GameMap } from "../world/map";
 
 /**
  * A level is a collection of game objects that are loaded and unloaded together.
@@ -7,10 +8,10 @@ import { Scene, Camera } from "three";
 export abstract class Level
 {
     private _levelName: string;
-    private _scene!: Scene;
+    private _gameMap!: GameMap;
     private _camera!: Camera;
     
-    constructor(levelName: string/* , scene: Scene, camera: Camera */)
+    constructor(levelName: string)
     {
         this._levelName = levelName;
     }
@@ -24,8 +25,8 @@ export abstract class Level
     }
 
     public get name() { return this._levelName; }
-    public get scene() { return this._scene; }
-    public set scene(scene: Scene) { this._scene = scene; }
+    public get gameMap() { return this._gameMap; }
+    public set gameMap(newMap: GameMap) { this._gameMap = newMap; }
     public get camera() { return this._camera; }
     public set camera(camera: Camera) { this._camera = camera; }
 }

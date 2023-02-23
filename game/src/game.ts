@@ -1,4 +1,5 @@
 import { Engine, Level, Entity, THREE } from 'minicleo';
+import { GameMap } from 'minicleo/build/world/map';
 
 class Player extends Entity
 {
@@ -37,8 +38,8 @@ class GameLevel1 extends Level
     constructor()
     {
         super('GameLevel1');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x000000);
+        const gameMap = new GameMap();
+        gameMap.background = new THREE.Color(0x000000);
 
         const camera = new THREE.PerspectiveCamera(75, 4/3, 0.0001, 1000);
         camera.position.z = 5;
@@ -51,7 +52,7 @@ class GameLevel1 extends Level
         cube.receiveShadow = true;
         cube.position.y = 1.5;
         cube.name = "Cube";
-        scene.add(cube);
+        gameMap.add(cube);
 
         const plane = new THREE.Mesh(
             new THREE.PlaneGeometry(100, 100),
@@ -70,7 +71,7 @@ class GameLevel1 extends Level
         sphere.name = "Sphere";
 
         sphere.position.x = 2;
-        scene.add(sphere);
+        gameMap.add(sphere);
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 20);
         directionalLight.name = "DirectionalLight";
@@ -86,27 +87,27 @@ class GameLevel1 extends Level
         directionalLight.shadow.camera.right = d;
         directionalLight.shadow.camera.near = 0.1;
         directionalLight.shadow.camera.far = 100;
-        scene.add(directionalLight);
+        gameMap.add(directionalLight);
 
         const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
         hemiLight.position.set(0, 100, 0);
-        scene.add(hemiLight);
+        gameMap.add(hemiLight);
 
 
         const player = new Player();
         player.initialize();
         player.position.x = -0.75;
         player.position.z = 2;
-        scene.add(player);
+        gameMap.add(player);
 
         const sponza = new Entity('assets/models/Sponza.glb');
         sponza.initialize();
         sponza.castShadow = true;
         sponza.receiveShadow = true;
         sponza.rotateY(Math.PI/2);
-        scene.add(sponza);
+        gameMap.add(sponza);
 
-        this.scene = scene;
+        this.gameMap = gameMap;
         this.camera = camera;
 
         window.addEventListener('wheel', (event) => {
@@ -116,13 +117,13 @@ class GameLevel1 extends Level
 
     public override update(): void {
         super.update();
-        this.scene.getObjectByName('Cube')?.rotateY(0.01);
+        this.gameMap.getObjectByName('Cube')?.rotateY(0.01);
         //this.scene.getObjectByName('Sphere')?.rotateOnAxis(new THREE.Vector3(1, 1, 1), 0.01);
 
-        const ent1 = this.scene.getObjectByName('Player') as Entity;
+        const ent1 = this.gameMap.getObjectByName('Player') as Entity;
         ent1.update();
 
-        const directionalLight = this.scene.getObjectByName('DirectionalLight') as THREE.DirectionalLight;
+        const directionalLight = this.gameMap.getObjectByName('DirectionalLight') as THREE.DirectionalLight;
         directionalLight.position.x = Math.sin(Date.now() / 1000) * 5;
         directionalLight.position.z = Math.cos(Date.now() / 1000) * 10;
 

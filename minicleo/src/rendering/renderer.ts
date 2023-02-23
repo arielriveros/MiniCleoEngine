@@ -72,7 +72,7 @@ export class Renderer extends Module
             this._composer.render();
         else
         {
-            this._renderer.render(this._levelManager.activeScene, this._levelManager.activeCamera);
+            this._renderer.render(this._levelManager.activeGameMap, this._levelManager.activeCamera);
         }
     }
 

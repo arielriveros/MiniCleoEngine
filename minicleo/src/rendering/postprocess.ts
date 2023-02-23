@@ -26,7 +26,7 @@ export class PostProcess
 
     public initialize()
     {
-        this._scene = this._renderer.levelManager.activeScene;
+        this._scene = this._renderer.levelManager.activeGameMap as Scene;
         this._camera = this._renderer.levelManager.activeCamera;
 
         this.initSSAO();

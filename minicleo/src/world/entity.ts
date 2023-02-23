@@ -1,4 +1,4 @@
-import { Mesh, Object3D, Material, DoubleSide } from "three";
+import { Mesh, Object3D } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 export class Entity extends Object3D
@@ -18,7 +18,7 @@ export class Entity extends Object3D
         {
             gltf.scene.traverse(
                 (child) => {
-                    if ((child as THREE.Mesh).isMesh)
+                    if ((child as Mesh).isMesh)
                     {
                         child.castShadow = true;
                         child.receiveShadow = true;

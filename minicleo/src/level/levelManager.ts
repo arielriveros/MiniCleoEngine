@@ -56,7 +56,7 @@ export class LevelManager extends Module
     }
 
     public get activeLevel() { return this._activeLevel; }
-    public get activeScene() { return this._activeLevel?.scene; }
+    public get activeGameMap() { return this._activeLevel?.gameMap; }
     public get activeCamera() { return this._activeLevel?.camera; }
 
 }
