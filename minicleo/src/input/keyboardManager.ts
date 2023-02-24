@@ -61,19 +61,15 @@ export class KeyboardManager
     public set onKeyDownCallback(callback: (keyCode: string) => void) 
     { 
         this._keyDownCallback = callback; 
-        this.initialize();
     }
 
     public set onKeyUpCallback(callback: (keyCode: string) => void)
     {
         this._keyUpCallback = callback;
-        this.initialize();
     }
 
     public set whileKeyDownCallback(callback: (state: KeyboardState) => void)
     {
-        
         this._whileKeyDownCallback = callback;
-        this.initialize();
     }
 }

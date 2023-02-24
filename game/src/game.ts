@@ -31,6 +31,11 @@ class Player extends Entity
             if(event.keys[68])
                 this.rotateY(-rate);
         }
+
+        const pointLight = new THREE.PointLight(0xffffff, 8.5, 60);
+        pointLight.position.set(0, 1, 0.25);
+
+        this.add(pointLight);
     }
 
     public override update(): void
