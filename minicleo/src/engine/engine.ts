@@ -20,9 +20,10 @@ class Engine
     private _modules: Array<Module>;
     private _renderer!: Renderer;
     private _levelManager!: LevelManager;
-    private _inputController!: InputController;
+    //private _inputController!: InputController;
     private _stats: Stats;
     private _renderContext: HTMLCanvasElement;
+    static _inputController: InputController;
     
     constructor(parameters: EngineParameters)
     {
@@ -62,7 +63,8 @@ class Engine
         this._renderer = new Renderer(this._renderContext, this._levelManager);
         this._modules.push(this._renderer);
 
-        
+        Engine._inputController = new InputController();
+        Engine._inputController.initialize();
     }
 
     /**
@@ -98,12 +100,18 @@ class Engine
 
     private mainLoop()
     {
+        Engine._inputController.update();
         this._stats.begin();
         for(let module of this._modules)
             module.update();
         this._stats.end();
 
         requestAnimationFrame(this.mainLoop.bind(this));
+    }
+
+    public static getInputController(): InputController
+    {
+        return this._inputController;
     }
 }
 

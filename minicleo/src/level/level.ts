@@ -11,18 +11,15 @@ export abstract class Level
     private _levelName: string;
     private _gameMap!: GameMap;
     private _camera!: Camera;
-    private _inputController!: InputController;
     
     constructor(levelName: string)
     {
         this._levelName = levelName;
-        this._inputController = new InputController();
     }
 
     public initialize(): void { }
 
     public update(): void {
-        this._inputController.update();
     }
 
     public destroy(): void
@@ -36,5 +33,5 @@ export abstract class Level
     public set gameMap(newMap: GameMap) { this._gameMap = newMap; }
     public get camera() { return this._camera; }
     public set camera(camera: Camera) { this._camera = camera; }
-    public get input() { return this._inputController; }
+    //public get input() { return this._inputController; }
 }

@@ -27,6 +27,7 @@ export class MouseManager
 
     public initialize()
     {
+        this.reset();
         window.addEventListener("mousemove", (event) => this.onMouseMove(event));
         window.addEventListener("mousedown", (event) => this.onMouseDown(event));
         window.addEventListener("mouseup", (event) => this.onMouseUp(event));
@@ -45,7 +46,7 @@ export class MouseManager
     {
         this._currentState.mouseX = event.pageX - window.innerWidth / 2;
         this._currentState.mouseY = event.pageY - window.innerHeight / 2;
-
+        
         if(this._previousState === null)
             this._previousState = {...this._currentState};
         
@@ -82,8 +83,6 @@ export class MouseManager
     public set mouseMoveCallback(callback: (state: MouseState) => void) 
     { 
         this._mouseMoveCallback = callback; 
-        this.reset();
-        this.initialize();
     }
 
 }

@@ -10,7 +10,8 @@ export class KeyboardManager
     private _previousState: KeyboardState | null;
 
     private _keyDownCallback?: (keyCode: string) => void;
-    private _keyUpCallback?: (state: KeyboardState) => void;
+    private _keyUpCallback?: (keyCode: string) => void;
+    private _whileKeyDownCallback?: (state: KeyboardState) => void;
 
     constructor()
     {
@@ -22,6 +23,7 @@ export class KeyboardManager
 
     public initialize()
     {
+        this.reset();
         window.addEventListener("keydown", (event) => this.onKeyDown(event));
         window.addEventListener("keyup", (event) => this.onKeyUp(event));
     }
@@ -46,21 +48,32 @@ export class KeyboardManager
         let keyCode = KeyboardMapping[event.code];
         this._currentState.keys[keyCode] = false;
         if(this._keyUpCallback)
-            this._keyUpCallback(this._currentState);
+            this._keyUpCallback(event.code);
     }
 
     public update()
     {
         this._previousState = {...this._currentState};
+        if(this._whileKeyDownCallback)
+            this._whileKeyDownCallback(this._currentState);
     }
 
     public set onKeyDownCallback(callback: (keyCode: string) => void) 
     { 
-        this.reset();
         this._keyDownCallback = callback; 
         this.initialize();
     }
 
+    public set onKeyUpCallback(callback: (keyCode: string) => void)
+    {
+        this._keyUpCallback = callback;
+        this.initialize();
+    }
 
-
+    public set whileKeyDownCallback(callback: (state: KeyboardState) => void)
+    {
+        
+        this._whileKeyDownCallback = callback;
+        this.initialize();
+    }
 }
