@@ -1,6 +1,7 @@
 import { Camera } from "three";
 import { GameMap } from "../world/map";
 import { InputController } from "../input/inputController";
+import { Entity } from "../core";
 
 /**
  * A level is a collection of game objects that are loaded and unloaded together.
@@ -11,19 +12,35 @@ export abstract class Level
     private _levelName: string;
     private _gameMap!: GameMap;
     private _camera!: Camera;
+    private _entities: Array<Entity>;
     
     constructor(levelName: string)
     {
         this._levelName = levelName;
+        this._entities = new Array<Entity>();
     }
 
-    public initialize(): void { }
+    public initialize(): void {
+        for(let child of this._gameMap.children)
+        {
+            if(child instanceof Entity)
+            {
+                child.initialize();
+                this._entities.push(child);
+            }
+        }
+    }
 
-    public update(): void {
+    public update(): void
+    {
+        for(let entity of this._entities)
+            entity.update();
     }
 
     public destroy(): void
     {
+        for(let entity of this._entities)
+            entity.destroy();
     }
 
     public addInputController(inputController: InputController): void { }

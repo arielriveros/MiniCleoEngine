@@ -4,12 +4,13 @@ import { Level } from "./level";
 export class LevelManager extends Module
 {
     private _levels: Array<Level>;
-    private _activeLevel!: Level;
+    private _activeLevel: Level | null;
 
     constructor()
     {
         super("LEVEL_MANAGER");
         this._levels = new Array<Level>();
+        this._activeLevel = null;
     }
 
     public initialize()
@@ -42,10 +43,17 @@ export class LevelManager extends Module
             return true;
         }
 
+        if(this._activeLevel !== null)
+        {   
+            this._activeLevel.destroy();
+            this._activeLevel = null;
+        }
+
         for(let level of this._levels)
         {
             if(level.name === levelName)
             {
+                level.initialize();
                 this._activeLevel = level;
                 return true;
             }
