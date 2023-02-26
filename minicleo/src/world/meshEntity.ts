@@ -1,12 +1,29 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Entity } from "./entity";
-import { Mesh } from "three";
+import { Group, Mesh, Object3D } from "three";
+
+interface MeshEntityParameters
+{
+    name?: string;
+    position?: { x: number, y: number, z: number };
+    rotation?: { x: number, y: number, z: number };
+    scale?: { x: number, y: number, z: number };
+    modelPath?: string;
+}
+
 
 export class MeshEntity extends Entity
 {
-    constructor()
+    constructor(parameters: MeshEntityParameters)
     {
-        super();
+        super(
+            parameters.name ? parameters.name : "MeshEntity",
+            parameters.position ? parameters.position : { x: 0, y: 0, z: 0 },
+            parameters.rotation ? parameters.rotation : { x: 0, y: 0, z: 0 },
+            parameters.scale ? parameters.scale : { x: 1, y: 1, z: 1 }
+        );
+        if (parameters.modelPath)
+            this.loadMesh(parameters.modelPath);
     }
 
     public loadMesh(modelPath: string)
@@ -24,13 +41,12 @@ export class MeshEntity extends Entity
                     }
                 }
             )
-            this.add(gltf.scene);
+            this.setMesh(gltf.scene);
         });
     }
 
-    public setMesh(mesh: Mesh)
+    public setMesh(mesh: Mesh | Object3D | Group)
     {
-        this.parent?.remove(this);
         this.add(mesh);
     }
 

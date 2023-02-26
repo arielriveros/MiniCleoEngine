@@ -4,14 +4,17 @@ class Player extends MeshEntity
 {
     constructor()
     {
-        super();
-        this.name = "Player";
+        super({
+            name: 'Player',
+            position: { x: -0.75, y: 0, z: 2 },
+            rotation: { x: 0, y: 0, z: 0 },
+            modelPath: 'assets/models/Zombie.glb'
+        });
     }
     
     public override initialize(): void
     {
         super.initialize();
-        this.loadMesh('assets/models/Zombie.glb');
         Engine.getInputController().keyboard.whileKeyDownCallback = (event) => {
             
             const rate = 0.05;
@@ -94,22 +97,16 @@ class GameLevel1 extends Level
 
 
         const player = new Player();
-        player.position.x = -0.75;
-        player.position.z = 2;
+        player.add(camera);
         gameMap.add(player);
         
-
-        const sponza = new MeshEntity();
-        sponza.loadMesh('assets/models/Sponza.glb');
-        sponza.castShadow = true;
-        sponza.receiveShadow = true;
-        sponza.rotateY(Math.PI/2);
-        gameMap.add(sponza);
-
-        this.gameMap = gameMap;
-        this.camera = camera;
-
-        gameMap.add(camera);
+        gameMap.add(
+            new MeshEntity({
+                name: 'Sponza',
+                rotation: { x: 0, y: Math.PI/2, z: 0 },
+                modelPath: 'assets/models/Sponza.glb'
+            })
+        );
 
         const pointLightWhite = new THREE.PointLight(0xffffff, 10, 15);
         pointLightWhite.name = "PointLightW";
@@ -121,21 +118,17 @@ class GameLevel1 extends Level
         pointLightRed.position.set(0, 0.5, 0);
         gameMap.add(pointLightRed);
 
-        const damagedHelmet = new MeshEntity();
-        damagedHelmet.loadMesh('assets/models/DamagedHelmet.glb');
-        damagedHelmet.castShadow = true;
+        gameMap.add(
+            new MeshEntity({
+                name: 'DamagedHelmet',
+                position: { x: 3.5, y: 1, z: 2.5 },
+                scale: { x: 0.5, y: 0.5, z: 0.5 },
+                modelPath: 'assets/models/DamagedHelmet.glb',
+            })
+        );
 
-        damagedHelmet.name = "DamagedHelmet";
-        damagedHelmet.position.x = 3.5;
-        damagedHelmet.position.y = 1;
-        damagedHelmet.position.z = 2.5;
-
-        damagedHelmet.scale.x = 0.5;
-        damagedHelmet.scale.y = 0.5;
-        damagedHelmet.scale.z = 0.5;
-        gameMap.add(damagedHelmet);
-        
-        player.add(camera);
+        this.gameMap = gameMap;
+        this.camera = camera;
     }
 
     public override initialize(): void {
@@ -163,7 +156,8 @@ class GameLevel1 extends Level
         pointLight2.position.z = Math.cos(Date.now() / 1000) * -10;
 
         const ent2 = this.gameMap.getObjectByName('DamagedHelmet') as Entity;
-        ent2.rotateY(0.01);
+        if(ent2)
+            ent2.rotateY(0.01);
     }
 }
 
