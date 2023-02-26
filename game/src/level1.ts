@@ -1,16 +1,17 @@
-import { Engine, Level, GameMap, Entity, THREE } from 'minicleo';
+import { Engine, Level, GameMap, Entity, THREE, MeshEntity } from 'minicleo';
 
-class Player extends Entity
+class Player extends MeshEntity
 {
     constructor()
     {
-        super('assets/models/Zombie.glb');
+        super();
         this.name = "Player";
     }
-
+    
     public override initialize(): void
     {
         super.initialize();
+        this.loadMesh('assets/models/Zombie.glb');
         Engine.getInputController().keyboard.whileKeyDownCallback = (event) => {
             
             const rate = 0.05;
@@ -98,7 +99,8 @@ class GameLevel1 extends Level
         gameMap.add(player);
         
 
-        const sponza = new Entity('assets/models/Sponza.glb');
+        const sponza = new MeshEntity();
+        sponza.loadMesh('assets/models/Sponza.glb');
         sponza.castShadow = true;
         sponza.receiveShadow = true;
         sponza.rotateY(Math.PI/2);
@@ -119,7 +121,8 @@ class GameLevel1 extends Level
         pointLightRed.position.set(0, 0.5, 0);
         gameMap.add(pointLightRed);
 
-        const damagedHelmet = new Entity('assets/models/DamagedHelmet.glb');
+        const damagedHelmet = new MeshEntity();
+        damagedHelmet.loadMesh('assets/models/DamagedHelmet.glb');
         damagedHelmet.castShadow = true;
 
         damagedHelmet.name = "DamagedHelmet";

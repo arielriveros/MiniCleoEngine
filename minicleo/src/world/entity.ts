@@ -1,39 +1,12 @@
-import { Mesh, Object3D } from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { Object3D } from "three";
 
-export class Entity extends Object3D
+export abstract class Entity extends Object3D
 {
-    private _modelPath: string;
+    constructor() { super(); }
 
-    constructor(modelPath: string)
-    {
-        super();
-        this._modelPath = modelPath;
-    }
+    public initialize() {}
 
-    public initialize()
-    {
-        const loader = new GLTFLoader();
-        loader.load(this._modelPath, (gltf) =>
-        {
-            gltf.scene.traverse(
-                (child) => {
-                    if ((child as Mesh).isMesh)
-                    {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                        child.frustumCulled = false;
-                    }
-                }
-            )
-            this.add(gltf.scene);
-        });
-    }
-
-    public update()
-    {
-        
-    }
+    public update() {}
 
     public destroy()
     {
