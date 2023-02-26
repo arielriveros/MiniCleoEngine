@@ -63,6 +63,9 @@ class GameLevel1 extends Level
         camera.position.y = 1.65;
         camera.position.z = -1.25;
         camera.rotateY(Math.PI);
+
+        this.gameMap = gameMap;
+        this.camera = camera;
         
         const cube: THREE.Mesh = new THREE.Mesh(
                 new THREE.BoxGeometry(1, 1, 1),
@@ -98,9 +101,9 @@ class GameLevel1 extends Level
 
         const player = new Player();
         player.add(camera);
-        gameMap.add(player);
+        this.addEntity(player);
         
-        gameMap.add(
+        this.addEntity(
             new MeshEntity({
                 name: 'Sponza',
                 rotation: { x: 0, y: Math.PI/2, z: 0 },
@@ -118,7 +121,7 @@ class GameLevel1 extends Level
         pointLightRed.position.set(0, 0.5, 0);
         gameMap.add(pointLightRed);
 
-        gameMap.add(
+        this.addEntity(
             new MeshEntity({
                 name: 'DamagedHelmet',
                 position: { x: 3.5, y: 1, z: 2.5 },
@@ -127,8 +130,7 @@ class GameLevel1 extends Level
             })
         );
 
-        this.gameMap = gameMap;
-        this.camera = camera;
+        
     }
 
     public override initialize(): void {

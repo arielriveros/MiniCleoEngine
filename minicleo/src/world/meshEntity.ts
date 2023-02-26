@@ -9,6 +9,8 @@ interface MeshEntityParameters
     rotation?: { x: number, y: number, z: number };
     scale?: { x: number, y: number, z: number };
     modelPath?: string;
+    mass?: number;
+    shape?: 'sphere' | 'box' | 'cylinder';
 }
 
 
@@ -17,10 +19,12 @@ export class MeshEntity extends Entity
     constructor(parameters: MeshEntityParameters)
     {
         super(
-            parameters.name ? parameters.name : "MeshEntity",
-            parameters.position ? parameters.position : { x: 0, y: 0, z: 0 },
-            parameters.rotation ? parameters.rotation : { x: 0, y: 0, z: 0 },
-            parameters.scale ? parameters.scale : { x: 1, y: 1, z: 1 }
+            parameters.name || "MeshEntity",
+            parameters.position || { x: 0, y: 0, z: 0 },
+            parameters.rotation || { x: 0, y: 0, z: 0 },
+            parameters.scale || { x: 1, y: 1, z: 1 },
+            parameters.mass || 0,
+            parameters.shape || 'box'
         );
         if (parameters.modelPath)
             this.loadMesh(parameters.modelPath);

@@ -2,6 +2,7 @@ import { Camera } from "three";
 import { GameMap } from "../world/map";
 import { InputController } from "../input/inputController";
 import { Entity } from "../core";
+import * as CANNON from 'cannon-es';
 
 /**
  * A level is a collection of game objects that are loaded and unloaded together.
@@ -13,11 +14,27 @@ export abstract class Level
     private _gameMap!: GameMap;
     private _camera!: Camera;
     private _entities: Array<Entity>;
+    private _physicsWorld!: CANNON.World;
     
     constructor(levelName: string)
     {
         this._levelName = levelName;
         this._entities = new Array<Entity>();
+        this._physicsWorld = new CANNON.World(
+            {
+                gravity: new CANNON.Vec3(0, -9.82, 0)
+            }
+        );
+
+        // Fixed basic ground plane
+        let groundBody = new CANNON.Body(
+            {
+                type: CANNON.Body.STATIC,
+                shape: new CANNON.Plane(),
+            }
+        );
+        groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+        this.physicsWorld.addBody(groundBody);
     }
 
     public initialize(): void {
@@ -27,14 +44,18 @@ export abstract class Level
             {
                 child.initialize();
                 this._entities.push(child);
+                if(child.physicsBody)
+                    this.physicsWorld.addBody(child.physicsBody);
             }
         }
     }
 
     public update(): void
     {
+        this.physicsWorld.fixedStep();
         for(let entity of this._entities)
             entity.update();
+        
     }
 
     public destroy(): void
@@ -43,12 +64,31 @@ export abstract class Level
             entity.destroy();
     }
 
-    public addInputController(inputController: InputController): void { }
+    public addEntity(entity: Entity): void
+    {
+        entity.initialize();
+        this._entities.push(entity);
+        this._gameMap.add(entity);
+        if(entity.physicsBody)
+            this.physicsWorld.addBody(entity.physicsBody);
+    }
+
+    public removeEntity(entity: Entity): void
+    {
+        let index = this._entities.indexOf(entity);
+        if(index > -1)
+        {
+            this._entities.splice(index, 1);
+            this._gameMap.remove(entity);
+            if(entity.physicsBody)
+                this.physicsWorld.removeBody(entity.physicsBody);
+        }
+    }
 
     public get name() { return this._levelName; }
     public get gameMap() { return this._gameMap; }
     public set gameMap(newMap: GameMap) { this._gameMap = newMap; }
     public get camera() { return this._camera; }
     public set camera(camera: Camera) { this._camera = camera; }
-    //public get input() { return this._inputController; }
+    public get physicsWorld() { return this._physicsWorld; }
 }

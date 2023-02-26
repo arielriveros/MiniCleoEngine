@@ -4,3 +4,4 @@ export { Entity } from './world/entity';
 export { MeshEntity } from './world/meshEntity';
 export { GameMap } from './world/map';
 export * as THREE from 'three';
+export * as CANNON from 'cannon-es';
