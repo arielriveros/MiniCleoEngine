@@ -5,6 +5,7 @@ interface vec3 { x: number, y: number, z: number };
 
 export abstract class Entity extends Object3D
 {
+    private _root: Object3D;
     private _physicsBody: CANNON.Body | null;
     
     constructor(
@@ -18,6 +19,7 @@ export abstract class Entity extends Object3D
     {
         // Object3D Parameter settings
         super();
+        this._root = new Object3D();
         this.name = name;
         this.position.set(position.x, position.y, position.z);
         this.rotation.set(rotation.x, rotation.y, rotation.z);
@@ -48,13 +50,15 @@ export abstract class Entity extends Object3D
                 mass: mass,
                 shape: physicsShape, 
             });
-            
+
             // Set the physics body's position and rotation to match the entity's in initialization
             this._physicsBody.position.set(position.x, position.y, position.z);
             this._physicsBody.quaternion.setFromEuler(rotation.x, rotation.y, rotation.z);
         }
         else
             this._physicsBody = null;
+
+        this.add(this._root);
     }
 
     public initialize() {}
@@ -104,5 +108,6 @@ export abstract class Entity extends Object3D
         //return super.rotateY(angle);
     }
 
+    public get root() { return this._root; }
     public get physicsBody() { return this._physicsBody; }
 }
