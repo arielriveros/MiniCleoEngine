@@ -45,7 +45,7 @@ export abstract class Entity extends Object3D
                     physicsShape = new CANNON.Box(new CANNON.Vec3(1, 1, 1));
                     break;
                 case 'cylinder':
-                    physicsShape = new CANNON.Cylinder(1, 1, 1, 32);
+                    physicsShape = new CANNON.Cylinder(0.35, 0.35, 1.75, 8);
                     break;
                 default:
                     physicsShape = new CANNON.Box(new CANNON.Vec3(1, 1, 1));
@@ -77,7 +77,8 @@ export abstract class Entity extends Object3D
         if (this._physicsBody)
         {
             this.position.copy(this._physicsBody.position as any);
-            this.quaternion.copy(this._physicsBody.quaternion as any);
+            if(!this._physicsBody.fixedRotation)
+                this.quaternion.copy(this._physicsBody.quaternion as any);
         }
     }
 
@@ -93,12 +94,12 @@ export abstract class Entity extends Object3D
         this.getWorldDirection(forward);
 
         if (this._physicsBody)
-            this._physicsBody.applyImpulse(new CANNON.Vec3(forward.x * speed, forward.y * speed, forward.z * speed));
+            this._physicsBody.velocity.set(forward.x * speed, forward.y * speed, forward.z * speed);
+            //this._physicsBody.applyImpulse(new CANNON.Vec3(forward.x * speed, forward.y * speed, forward.z * speed));
     }
 
     public moveRight(speed: number)
     {
-        console.log("moveRight");
         // get forward vector
         const forward = new Vector3();
         this.getWorldDirection(forward);
@@ -108,7 +109,27 @@ export abstract class Entity extends Object3D
         right.crossVectors(forward, new Vector3(0, 1, 0));
 
         if (this._physicsBody)
-            this._physicsBody.applyImpulse(new CANNON.Vec3(right.x * speed, right.y * speed, right.z * speed));
+            //this._physicsBody.applyImpulse(new CANNON.Vec3(right.x * speed, right.y * speed, right.z * speed));
+            this._physicsBody.velocity.set(right.x * speed, right.y * speed, right.z * speed);
+    }
+
+    public moveUp(speed: number)
+    {
+        // get forward vector
+        const forward = new Vector3();
+        this.getWorldDirection(forward);
+
+        // get right vector
+        const right = new Vector3();
+        right.crossVectors(forward, new Vector3(0, 1, 0));
+
+        // get up vector
+        const up = new Vector3();
+        up.crossVectors(right, forward);
+
+        if (this._physicsBody)
+            this._physicsBody.applyImpulse(new CANNON.Vec3(up.x * speed, up.y * speed, up.z * speed));
+
     }
 
     public rotateEntityY(angle: number): void

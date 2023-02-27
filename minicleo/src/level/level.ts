@@ -16,6 +16,8 @@ export abstract class Level
     private _entities: Array<Entity>;
     private _physicsWorld!: CANNON.World;
     private _cannonDebugger?: { update: () => void; };
+
+    private _debug: boolean = true;
     
     constructor(levelName: string)
     {
@@ -28,7 +30,6 @@ export abstract class Level
                 solver: new CANNON.GSSolver(),
             }
         );
-        
 
         // Fixed basic ground plane
         let groundBody = new CANNON.Body(
@@ -53,7 +54,8 @@ export abstract class Level
             }
         }
 
-        this._cannonDebugger = CannonDebugger(this._gameMap, this._physicsWorld, {});
+        if(this._debug)
+            this._cannonDebugger = CannonDebugger(this._gameMap, this._physicsWorld, {});
     }
 
     public update(): void
@@ -61,7 +63,8 @@ export abstract class Level
         this.physicsWorld.fixedStep();
         for(let entity of this._entities)
             entity.update();
-        this._cannonDebugger?.update();
+        if(this._cannonDebugger)
+            this._cannonDebugger?.update();
         
     }
 

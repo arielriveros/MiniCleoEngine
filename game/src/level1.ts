@@ -6,13 +6,13 @@ class Player extends MeshEntity
     {
         super({
             name: 'Player',
-            position: { x: -0.75, y: 0.5, z: 2 },
+            position: { x: -0.75, y: 1.75/2, z: 2 },
             rotation: { x: 0, y: 0, z: 0 },
             modelPath: 'assets/models/Zombie.glb',
-            mass: 1,
+            mass: 20,
             shape: 'cylinder',
             fixedRotation: true,
-            meshPosition: { x: 0, y: -0.5, z: 0 },
+            meshPosition: { x: 0, y: -0.88, z: 0 },
         });
     }
     
@@ -21,8 +21,8 @@ class Player extends MeshEntity
         super.initialize();
         Engine.getInputController().keyboard.whileKeyDownCallback = (event) => {
             
-            const movementRate = 10;
-            const rotationRate = 0.1;
+            const movementRate = 15;
+            const rotationRate = 0.05;
             if(event.keys[87])
                 this.moveForward(movementRate);
             if(event.keys[83])
@@ -32,15 +32,25 @@ class Player extends MeshEntity
             if(event.keys[81])
                 this.moveRight(-movementRate);
             if(event.keys[65])
-                this.rootMesh.rotateY(rotationRate);
+                this.rotateY(rotationRate);
             if(event.keys[68])
-                this.rootMesh.rotateY(-rotationRate);
+                this.rotateY(-rotationRate);
         }
+
+        Engine.getInputController().keyboard.onKeyDownCallback = (key) => {
+            if(key === 'Space')
+                this.jump(50);
+        };
 
         const pointLight = new THREE.PointLight(0xffffff, 8.5, 60);
         pointLight.position.set(0, 1, 0.25);
 
         this.add(pointLight);
+    }
+
+    private jump(power: number): void
+    {
+        this.moveUp(power);
     }
 
     public override update(): void
@@ -65,7 +75,7 @@ class GameLevel1 extends Level
                 1000
             );
         camera.position.x = -0.5;
-        camera.position.y = 1.65;
+        camera.position.y = 1;
         camera.position.z = -2.25;
         camera.rotateY(Math.PI);
 
@@ -105,7 +115,7 @@ class GameLevel1 extends Level
 
 
         const player = new Player();
-        //player.add(camera);
+        player.add(camera);
         this.addEntity(player);
         
         this.addEntity(
@@ -130,8 +140,21 @@ class GameLevel1 extends Level
             new MeshEntity({
                 name: 'DamagedHelmet',
                 position: { x: 3.5, y: 1, z: 2.5 },
-                scale: { x: 0.5, y: 0.5, z: 0.5 },
+                scale: { x: 1, y: 1, z: 1 },
                 modelPath: 'assets/models/DamagedHelmet.glb',
+                mass: 1,
+                shape: 'sphere',
+            })
+        );
+
+        this.addEntity(
+            new MeshEntity({
+                name: 'DamagedHelmet',
+                position: { x: 0, y: 3, z: 5 },
+                scale: { x: 1, y: 1, z: 1 },
+                modelPath: 'assets/models/DamagedHelmet.glb',
+                mass: 1,
+                shape: 'sphere',
             })
         );
 
