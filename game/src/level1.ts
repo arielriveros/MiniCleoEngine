@@ -6,11 +6,13 @@ class Player extends MeshEntity
     {
         super({
             name: 'Player',
-            position: { x: -0.75, y: 1, z: 2 },
+            position: { x: -0.75, y: 0.5, z: 2 },
             rotation: { x: 0, y: 0, z: 0 },
             modelPath: 'assets/models/Zombie.glb',
             mass: 1,
-            shape: 'box'
+            shape: 'cylinder',
+            fixedRotation: true,
+            meshPosition: { x: 0, y: -0.5, z: 0 },
         });
     }
     
@@ -19,19 +21,20 @@ class Player extends MeshEntity
         super.initialize();
         Engine.getInputController().keyboard.whileKeyDownCallback = (event) => {
             
-            const rate = 0.5;
+            const movementRate = 10;
+            const rotationRate = 0.1;
             if(event.keys[87])
-                this.moveForward(rate);
+                this.moveForward(movementRate);
             if(event.keys[83])
-                this.moveForward(-rate);
+                this.moveForward(-movementRate);
             if(event.keys[69])
-                this.moveRight(rate);
+                this.moveRight(movementRate);
             if(event.keys[81])
-                this.moveRight(-rate);
+                this.moveRight(-movementRate);
             if(event.keys[65])
-                this.rotateEntityY(rate);
+                this.rootMesh.rotateY(rotationRate);
             if(event.keys[68])
-                this.rotateY(-rate);
+                this.rootMesh.rotateY(-rotationRate);
         }
 
         const pointLight = new THREE.PointLight(0xffffff, 8.5, 60);

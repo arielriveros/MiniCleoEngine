@@ -3,37 +3,40 @@ import * as CANNON from 'cannon-es';
 
 interface vec3 { x: number, y: number, z: number };
 
+export interface EntityParameters
+{
+    name?: string;
+    position?: vec3;
+    rotation?: vec3;
+    scale?: vec3;
+    mass?: number;
+    shape?: 'sphere' | 'box' | 'cylinder';
+    fixedRotation?: boolean;
+}
+
 export abstract class Entity extends Object3D
 {
-    private _root: Object3D;
+    private _rootMesh: Object3D;
     private _physicsBody: CANNON.Body | null;
     
-    constructor(
-        name: string,
-        position: vec3,
-        rotation: vec3,
-        scale: vec3,
-        mass: number = 0,
-        shape: 'sphere' | 'box' | 'cylinder' = 'box'
-        )
-    {
+    constructor(parameters: EntityParameters)    {
         // Object3D Parameter settings
         super();
-        this._root = new Object3D();
-        this.name = name;
-        this.position.set(position.x, position.y, position.z);
-        this.rotation.set(rotation.x, rotation.y, rotation.z);
-        this.scale.set(scale.x, scale.y, scale.z);
+        this._rootMesh = new Object3D();
+        this.name = parameters.name || 'Entity';
+        this.position.set(parameters.position?.x || 0, parameters.position?.y || 0, parameters.position?.z || 0);
+        this.rotation.set(parameters.rotation?.x || 0, parameters.rotation?.y || 0, parameters.rotation?.z || 0);
+        this.scale.set(parameters.scale?.x || 1, parameters.scale?.y || 1, parameters.scale?.z || 1);
 
         // Physics Body settings
 
         // If the body has mass it is dynamic, otherwise it is static and does not have a physics body
-        if (mass > 0)
+        if (parameters.mass && parameters.mass > 0)
         {
             let physicsShape: CANNON.Shape;
 
             // TODO: Change hardcoded shapes to be passed in as parameters
-            switch (shape)
+            switch (parameters.shape)
             {
                 case 'sphere':
                     physicsShape = new CANNON.Sphere(1);
@@ -44,21 +47,28 @@ export abstract class Entity extends Object3D
                 case 'cylinder':
                     physicsShape = new CANNON.Cylinder(1, 1, 1, 32);
                     break;
+                default:
+                    physicsShape = new CANNON.Box(new CANNON.Vec3(1, 1, 1));
+                    break;
             }
             
             this._physicsBody = new CANNON.Body({
-                mass: mass,
+                mass: parameters.mass,
                 shape: physicsShape, 
+                fixedRotation: parameters.fixedRotation || false
             });
 
             // Set the physics body's position and rotation to match the entity's in initialization
+            const position = parameters.position || { x: 0, y: 0, z: 0 };
+            const rotation = parameters.rotation || { x: 0, y: 0, z: 0 };
+
             this._physicsBody.position.set(position.x, position.y, position.z);
             this._physicsBody.quaternion.setFromEuler(rotation.x, rotation.y, rotation.z);
         }
         else
             this._physicsBody = null;
 
-        this.add(this._root);
+        this.add(this._rootMesh);
     }
 
     public initialize() {}
@@ -108,6 +118,6 @@ export abstract class Entity extends Object3D
         //return super.rotateY(angle);
     }
 
-    public get root() { return this._root; }
+    public get rootMesh() { return this._rootMesh; }
     public get physicsBody() { return this._physicsBody; }
 }

@@ -1,16 +1,13 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { Entity } from "./entity";
+import { Entity, EntityParameters } from "./entity";
 import { Group, Mesh, Object3D } from "three";
 
-interface MeshEntityParameters
+interface MeshEntityParameters extends EntityParameters
 {
-    name?: string;
-    position?: { x: number, y: number, z: number };
-    rotation?: { x: number, y: number, z: number };
-    scale?: { x: number, y: number, z: number };
     modelPath?: string;
-    mass?: number;
-    shape?: 'sphere' | 'box' | 'cylinder';
+    meshPosition?: { x: number, y: number, z: number };
+    meshRotation?: { x: number, y: number, z: number };
+    meshScale?: { x: number, y: number, z: number };
 }
 
 
@@ -18,16 +15,18 @@ export class MeshEntity extends Entity
 {
     constructor(parameters: MeshEntityParameters)
     {
-        super(
-            parameters.name || "MeshEntity",
-            parameters.position || { x: 0, y: 0, z: 0 },
-            parameters.rotation || { x: 0, y: 0, z: 0 },
-            parameters.scale || { x: 1, y: 1, z: 1 },
-            parameters.mass || 0,
-            parameters.shape || 'box'
-        );
+        super(parameters);
         if (parameters.modelPath)
             this.loadMesh(parameters.modelPath);
+        
+        if (parameters.meshPosition)
+            this.rootMesh.position.set(parameters.meshPosition.x, parameters.meshPosition.y, parameters.meshPosition.z);
+
+        if (parameters.meshRotation)
+            this.rootMesh.rotation.set(parameters.meshRotation.x, parameters.meshRotation.y, parameters.meshRotation.z);
+
+        if (parameters.meshScale)
+            this.rootMesh.scale.set(parameters.meshScale.x, parameters.meshScale.y, parameters.meshScale.z);
     }
 
     public loadMesh(modelPath: string)
@@ -51,7 +50,8 @@ export class MeshEntity extends Entity
 
     public setMesh(mesh: Mesh | Object3D | Group)
     {
-        this.add(mesh);
+        this.rootMesh.remove(...this.rootMesh.children);
+        this.rootMesh.add(mesh);
     }
 
     public initialize() { super.initialize(); }
@@ -60,5 +60,5 @@ export class MeshEntity extends Entity
 
     public destroy() { super.destroy(); }
 
-    public get mesh() { return this.children[0]; }
+    public get mesh() { return this.rootMesh; }
 }
