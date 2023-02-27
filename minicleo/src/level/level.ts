@@ -1,8 +1,8 @@
-import { Camera } from "three";
+import { Camera, Scene } from "three";
 import { GameMap } from "../world/map";
-import { InputController } from "../input/inputController";
 import { Entity } from "../core";
 import * as CANNON from 'cannon-es';
+import CannonDebugger from 'cannon-es-debugger'
 
 /**
  * A level is a collection of game objects that are loaded and unloaded together.
@@ -15,6 +15,7 @@ export abstract class Level
     private _camera!: Camera;
     private _entities: Array<Entity>;
     private _physicsWorld!: CANNON.World;
+    private _cannonDebugger?: { update: () => void; };
     
     constructor(levelName: string)
     {
@@ -22,9 +23,12 @@ export abstract class Level
         this._entities = new Array<Entity>();
         this._physicsWorld = new CANNON.World(
             {
-                gravity: new CANNON.Vec3(0, -9.82, 0)
+                gravity: new CANNON.Vec3(0, -9.82, 0),
+                broadphase: new CANNON.NaiveBroadphase(),
+                solver: new CANNON.GSSolver(),
             }
         );
+        
 
         // Fixed basic ground plane
         let groundBody = new CANNON.Body(
@@ -48,6 +52,8 @@ export abstract class Level
                     this.physicsWorld.addBody(child.physicsBody);
             }
         }
+
+        this._cannonDebugger = CannonDebugger(this._gameMap, this._physicsWorld, {});
     }
 
     public update(): void
@@ -55,6 +61,7 @@ export abstract class Level
         this.physicsWorld.fixedStep();
         for(let entity of this._entities)
             entity.update();
+        this._cannonDebugger?.update();
         
     }
 
