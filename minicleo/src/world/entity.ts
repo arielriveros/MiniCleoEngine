@@ -1,4 +1,4 @@
-import { Object3D } from "three";
+import { Object3D, Vector3 } from "three";
 import * as CANNON from 'cannon-es';
 
 interface vec3 { x: number, y: number, z: number };
@@ -46,8 +46,9 @@ export abstract class Entity extends Object3D
             
             this._physicsBody = new CANNON.Body({
                 mass: mass,
-                shape: physicsShape
+                shape: physicsShape, 
             });
+            
             // Set the physics body's position and rotation to match the entity's in initialization
             this._physicsBody.position.set(position.x, position.y, position.z);
             this._physicsBody.quaternion.setFromEuler(rotation.x, rotation.y, rotation.z);
@@ -69,6 +70,38 @@ export abstract class Entity extends Object3D
     public destroy()
     {
         this.parent?.remove(this);
+    }
+
+    public moveForward(speed: number)
+    {
+        // get forward vector
+        const forward = new Vector3();
+        this.getWorldDirection(forward);
+
+        if (this._physicsBody)
+            this._physicsBody.applyImpulse(new CANNON.Vec3(forward.x * speed, forward.y * speed, forward.z * speed));
+    }
+
+    public moveRight(speed: number)
+    {
+        console.log("moveRight");
+        // get forward vector
+        const forward = new Vector3();
+        this.getWorldDirection(forward);
+
+        // get right vector
+        const right = new Vector3();
+        right.crossVectors(forward, new Vector3(0, 1, 0));
+
+        if (this._physicsBody)
+            this._physicsBody.applyImpulse(new CANNON.Vec3(right.x * speed, right.y * speed, right.z * speed));
+    }
+
+    public rotateEntityY(angle: number): void
+    {
+        if(this._physicsBody)
+            this._physicsBody.applyTorque(new CANNON.Vec3(0, angle, 0));
+        //return super.rotateY(angle);
     }
 
     public get physicsBody() { return this._physicsBody; }

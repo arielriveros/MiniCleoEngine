@@ -6,9 +6,11 @@ class Player extends MeshEntity
     {
         super({
             name: 'Player',
-            position: { x: -0.75, y: 0, z: 2 },
+            position: { x: -0.75, y: 1, z: 2 },
             rotation: { x: 0, y: 0, z: 0 },
-            modelPath: 'assets/models/Zombie.glb'
+            modelPath: 'assets/models/Zombie.glb',
+            mass: 1,
+            shape: 'box'
         });
     }
     
@@ -17,17 +19,17 @@ class Player extends MeshEntity
         super.initialize();
         Engine.getInputController().keyboard.whileKeyDownCallback = (event) => {
             
-            const rate = 0.05;
+            const rate = 0.5;
             if(event.keys[87])
-                this.translateZ(rate);
+                this.moveForward(rate);
             if(event.keys[83])
-                this.translateZ(-rate);
+                this.moveForward(-rate);
             if(event.keys[69])
-                this.translateX(-rate);
+                this.moveRight(rate);
             if(event.keys[81])
-                this.translateX(rate);
+                this.moveRight(-rate);
             if(event.keys[65])
-                this.rotateY(rate);
+                this.rotateEntityY(rate);
             if(event.keys[68])
                 this.rotateY(-rate);
         }
@@ -61,7 +63,7 @@ class GameLevel1 extends Level
             );
         camera.position.x = -0.5;
         camera.position.y = 1.65;
-        camera.position.z = -1.25;
+        camera.position.z = -2.25;
         camera.rotateY(Math.PI);
 
         this.gameMap = gameMap;
@@ -100,7 +102,7 @@ class GameLevel1 extends Level
 
 
         const player = new Player();
-        player.add(camera);
+        //player.add(camera);
         this.addEntity(player);
         
         this.addEntity(
