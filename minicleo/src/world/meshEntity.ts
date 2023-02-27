@@ -1,15 +1,15 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Entity, EntityParameters } from "./entity";
 import { Group, Mesh, Object3D } from "three";
+import { vec3 } from "../common/interfaces";
 
 interface MeshEntityParameters extends EntityParameters
 {
     modelPath?: string;
-    meshPosition?: { x: number, y: number, z: number };
-    meshRotation?: { x: number, y: number, z: number };
-    meshScale?: { x: number, y: number, z: number };
+    meshPosition?: vec3;
+    meshRotation?: vec3;
+    meshScale?: vec3;
 }
-
 
 export class MeshEntity extends Entity
 {

@@ -1,4 +1,4 @@
-import { Engine, Level, GameMap, Entity, THREE, MeshEntity } from 'minicleo';
+import { Engine, Level, GameMap, Entity, RigidBody, SHAPES, THREE, MeshEntity } from 'minicleo';
 
 class Player extends MeshEntity
 {
@@ -9,9 +9,10 @@ class Player extends MeshEntity
             position: { x: -0.75, y: 1.75/2, z: 2 },
             rotation: { x: 0, y: 0, z: 0 },
             modelPath: 'assets/models/Zombie.glb',
-            mass: 20,
-            shape: 'cylinder',
-            fixedRotation: true,
+            rigidBody: new RigidBody(
+                20,
+                new SHAPES.Cylinder(0.5, 0.5, 1.75, 16),
+                true),
             meshPosition: { x: 0, y: -0.88, z: 0 },
         });
     }
@@ -20,8 +21,7 @@ class Player extends MeshEntity
     {
         super.initialize();
         Engine.getInputController().keyboard.whileKeyDownCallback = (event) => {
-            
-            const movementRate = 15;
+            const movementRate = 10;
             const rotationRate = 0.05;
             if(event.keys[87])
                 this.moveForward(movementRate);
@@ -39,7 +39,7 @@ class Player extends MeshEntity
 
         Engine.getInputController().keyboard.onKeyDownCallback = (key) => {
             if(key === 'Space')
-                this.jump(50);
+                this.jump(1);
         };
 
         const pointLight = new THREE.PointLight(0xffffff, 8.5, 60);
@@ -140,10 +140,13 @@ class GameLevel1 extends Level
             new MeshEntity({
                 name: 'DamagedHelmet',
                 position: { x: 3.5, y: 1, z: 2.5 },
-                scale: { x: 1, y: 1, z: 1 },
+                scale: { x: 0.5, y: 0.5, z: 0.5 },
                 modelPath: 'assets/models/DamagedHelmet.glb',
-                mass: 1,
-                shape: 'sphere',
+                rigidBody: new RigidBody(
+                    1,
+                    new SHAPES.Sphere(0.5),
+                    false),
+                meshPosition: { x: 0, y: 0, z: 0.35 },
             })
         );
 
@@ -153,8 +156,11 @@ class GameLevel1 extends Level
                 position: { x: 0, y: 3, z: 5 },
                 scale: { x: 1, y: 1, z: 1 },
                 modelPath: 'assets/models/DamagedHelmet.glb',
-                mass: 1,
-                shape: 'sphere',
+                rigidBody: new RigidBody(
+                    1,
+                    new SHAPES.Sphere(1),
+                    false),
+                meshPosition: { x: 0, y: 0, z: 0.35 },
             })
         );
 

@@ -1,4 +1,4 @@
-import { Level, GameMap, THREE, CANNON, Engine, MeshEntity } from "minicleo";
+import { Level, GameMap, THREE, Engine, MeshEntity, RigidBody, SHAPES } from "minicleo";
 
 class GameLevel2 extends Level
 {
@@ -58,8 +58,10 @@ class GameLevel2 extends Level
                         name: 'DamagedHelmet',
                         position: { x: Math.random()/2, y: 15, z: Math.random()/2 },
                         modelPath: 'assets/models/DamagedHelmet.glb',
-                        mass: 1,
-                        shape: 'sphere'
+                        rigidBody: new RigidBody(
+                            1,
+                            new SHAPES.Sphere(1),
+                            true),
                     })
                 );
             }

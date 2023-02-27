@@ -1,7 +1,7 @@
 import { Object3D, Vector3 } from "three";
-import * as CANNON from 'cannon-es';
-
-interface vec3 { x: number, y: number, z: number };
+import { Vec3 } from 'cannon-es';
+import { RigidBody } from "../physics/rigidBody";
+import { vec3 } from "../common/interfaces";
 
 export interface EntityParameters
 {
@@ -9,15 +9,13 @@ export interface EntityParameters
     position?: vec3;
     rotation?: vec3;
     scale?: vec3;
-    mass?: number;
-    shape?: 'sphere' | 'box' | 'cylinder';
-    fixedRotation?: boolean;
+    rigidBody?: RigidBody;
 }
 
-export abstract class Entity extends Object3D
+export class Entity extends Object3D
 {
     private _rootMesh: Object3D;
-    private _physicsBody: CANNON.Body | null;
+    private _physicsBody: RigidBody | null;
     
     constructor(parameters: EntityParameters)    {
         // Object3D Parameter settings
@@ -29,34 +27,11 @@ export abstract class Entity extends Object3D
         this.scale.set(parameters.scale?.x || 1, parameters.scale?.y || 1, parameters.scale?.z || 1);
 
         // Physics Body settings
-
-        // If the body has mass it is dynamic, otherwise it is static and does not have a physics body
-        if (parameters.mass && parameters.mass > 0)
+        if(parameters.rigidBody)
         {
-            let physicsShape: CANNON.Shape;
-
-            // TODO: Change hardcoded shapes to be passed in as parameters
-            switch (parameters.shape)
-            {
-                case 'sphere':
-                    physicsShape = new CANNON.Sphere(1);
-                    break;
-                case 'box':
-                    physicsShape = new CANNON.Box(new CANNON.Vec3(1, 1, 1));
-                    break;
-                case 'cylinder':
-                    physicsShape = new CANNON.Cylinder(0.35, 0.35, 1.75, 8);
-                    break;
-                default:
-                    physicsShape = new CANNON.Box(new CANNON.Vec3(1, 1, 1));
-                    break;
-            }
-            
-            this._physicsBody = new CANNON.Body({
-                mass: parameters.mass,
-                shape: physicsShape, 
-                fixedRotation: parameters.fixedRotation || false
-            });
+            this._physicsBody = parameters.rigidBody;
+            this._physicsBody.position.set(parameters.position?.x || 0, parameters.position?.y || 0, parameters.position?.z || 0);
+            this._physicsBody.quaternion.setFromEuler(parameters.rotation?.x || 0, parameters.rotation?.y || 0, parameters.rotation?.z || 0);
 
             // Set the physics body's position and rotation to match the entity's in initialization
             const position = parameters.position || { x: 0, y: 0, z: 0 };
@@ -128,14 +103,14 @@ export abstract class Entity extends Object3D
         up.crossVectors(right, forward);
 
         if (this._physicsBody)
-            this._physicsBody.applyImpulse(new CANNON.Vec3(up.x * speed, up.y * speed, up.z * speed));
+            this._physicsBody.applyImpulse(new Vec3(up.x * speed, up.y * speed, up.z * speed));
 
     }
 
     public rotateEntityY(angle: number): void
     {
         if(this._physicsBody)
-            this._physicsBody.applyTorque(new CANNON.Vec3(0, angle, 0));
+            this._physicsBody.applyTorque(new Vec3(0, angle, 0));
         //return super.rotateY(angle);
     }
 

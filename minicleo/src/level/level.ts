@@ -1,6 +1,8 @@
-import { Camera, Scene } from "three";
+import { Camera } from "three";
 import { GameMap } from "../world/map";
-import { Entity } from "../core";
+import { Entity } from '../world/entity';
+import { RigidBody } from '../physics/rigidBody';
+import { SHAPES } from '../physics/shapes';
 import * as CANNON from 'cannon-es';
 import CannonDebugger from 'cannon-es-debugger'
 
@@ -32,12 +34,7 @@ export abstract class Level
         );
 
         // Fixed basic ground plane
-        let groundBody = new CANNON.Body(
-            {
-                type: CANNON.Body.STATIC,
-                shape: new CANNON.Plane(),
-            }
-        );
+        let groundBody = new RigidBody(0, new SHAPES.Plane(), true);
         groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
         this.physicsWorld.addBody(groundBody);
     }
