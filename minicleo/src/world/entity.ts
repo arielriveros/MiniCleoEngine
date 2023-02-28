@@ -30,6 +30,7 @@ export class Entity extends Object3D
         if(parameters.rigidBody)
         {
             this._physicsBody = parameters.rigidBody;
+            this._physicsBody.name = this.name;
             this._physicsBody.position.set(parameters.position?.x || 0, parameters.position?.y || 0, parameters.position?.z || 0);
             this._physicsBody.quaternion.setFromEuler(parameters.rotation?.x || 0, parameters.rotation?.y || 0, parameters.rotation?.z || 0);
 

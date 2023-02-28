@@ -12,6 +12,8 @@ interface RigidBodyParameters
 
 export class RigidBody extends Body
 {
+    private _name!: string;
+
     constructor( parameters: RigidBodyParameters)
     {
         const mass = parameters.mass || 0;
@@ -21,4 +23,8 @@ export class RigidBody extends Body
         super({ mass: mass, shape: shape, fixedRotation: fixedRotation });
         this.shapeOffsets[0].set(offset.x, offset.y, offset.z);
     }
+
+    public get name(): string { return this._name; }
+    public set name(value: string) { this._name = value; }
+
 }

@@ -21,7 +21,7 @@ class Player extends MeshEntity
     {
         super.initialize();
         Engine.getInputController().keyboard.whileKeyDownCallback = (event) => {
-            const movementRate = 10;
+            const movementRate = 50;
             const rotationRate = 0.05;
             if(event.keys[87])
                 this.moveForward(movementRate);
@@ -37,20 +37,10 @@ class Player extends MeshEntity
                 this.rotateY(-rotationRate);
         }
 
-        Engine.getInputController().keyboard.onKeyDownCallback = (key) => {
-            if(key === 'Space')
-                this.jump(1);
-        };
-
         const pointLight = new THREE.PointLight(0xffffff, 8.5, 60);
         pointLight.position.set(0, 1, 0.25);
 
         this.add(pointLight);
-    }
-
-    private jump(power: number): void
-    {
-        this.moveUp(power);
     }
 
     public override update(): void
@@ -59,6 +49,58 @@ class Player extends MeshEntity
     }
 }
 
+class Cube extends MeshEntity
+{
+    private _colors: THREE.Color[] = [];
+    private _index: number;
+    private _cubeMesh: THREE.Mesh;
+
+    constructor(size: number, position: {x: number, y: number, z: number})
+    {
+        super({
+            name: 'Cube',
+            position: position,
+            scale: { x: size, y: size, z: size },
+            rigidBody: new RigidBody({
+                mass: 0.5,
+                shape: new SHAPES.Box({ x: size/2, y: size/2, z: size/2})
+            })
+        })
+
+        this._colors = [
+            new THREE.Color(0xff0000),
+            new THREE.Color(0x00ff00),
+            new THREE.Color(0x0000ff),
+            new THREE.Color(0xffff00),
+            new THREE.Color(0xff00ff),
+            new THREE.Color(0x00ffff)
+        ];
+
+        this._index = Math.floor(Math.random() * this._colors.length);
+        let color = this._colors[this._index];
+        this._cubeMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(1, 1, 1),
+            new THREE.MeshPhysicalMaterial({color: color,roughness: 0.1, metalness: 0.2})
+        )
+        this._cubeMesh.castShadow = true;
+        this._cubeMesh.receiveShadow = true;
+        this.setMesh(this._cubeMesh);
+
+        this.physicsBody?.addEventListener('collide', (event: { body: { name: any; }; }) => {
+            if(event.body.name === 'Player')
+                this.onPlayerCollision();
+        });
+    }
+
+    private onPlayerCollision(): void
+    {
+        this._index++;
+        this._cubeMesh.material = new THREE.MeshPhysicalMaterial({color: this._colors[this._index % this._colors.length ], roughness: 0.1, metalness: 0.2});
+
+        if(this._index > this._colors.length - 1)
+            this.destroy();
+    }
+}
 
 class GameLevel1 extends Level
 {
@@ -82,37 +124,9 @@ class GameLevel1 extends Level
         this.gameMap = gameMap;
         this.camera = camera;
         
-        const cube: THREE.Mesh = new THREE.Mesh(
-                new THREE.BoxGeometry(1, 1, 1),
-                new THREE.MeshPhysicalMaterial({color: 0x00ff00, roughness: 0.1, metalness: 0.2})
-            );
-        cube.castShadow = true;
-        cube.receiveShadow = true;
-        cube.position.y = 1.5;
-        cube.name = "Cube";
-        gameMap.add(cube);
+        this.initLights();
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 20);
-        directionalLight.name = "DirectionalLight";
-        directionalLight.position.set(1, 20, 0);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.bias = -0.001
-        directionalLight.shadow.mapSize.width = 4096;
-        directionalLight.shadow.mapSize.height = 4096;
-        const d = 15;
-        directionalLight.shadow.camera.top = d;
-        directionalLight.shadow.camera.bottom = -d;
-        directionalLight.shadow.camera.left = -d;
-        directionalLight.shadow.camera.right = d;
-        directionalLight.shadow.camera.near = 0.1;
-        directionalLight.shadow.camera.far = 100;
-        gameMap.add(directionalLight);
-
-        const hemiLight = new THREE.HemisphereLight(0xf9f9f9, 0x444444);
-        hemiLight.position.set(0, 100, 0);
-        hemiLight.intensity = 0.5;
-        gameMap.add(hemiLight);
-
+        this.addEntity(new Cube(1, { x: 0, y: 0, z: 0 }));
 
         const player = new Player();
         player.add(camera);
@@ -122,19 +136,10 @@ class GameLevel1 extends Level
             new MeshEntity({
                 name: 'Sponza',
                 rotation: { x: 0, y: Math.PI/2, z: 0 },
+                scale: { x: 2, y: 2, z: 2 },
                 modelPath: 'assets/models/Sponza.glb'
             })
         );
-
-        const pointLightWhite = new THREE.PointLight(0xffffff, 10, 15);
-        pointLightWhite.name = "PointLightW";
-        pointLightWhite.position.set(0, 0.75, 0);
-        gameMap.add(pointLightWhite);
-        
-        const pointLightRed = new THREE.PointLight(0xff0000, 10, 10);
-        pointLightRed.name = "PointLightR";
-        pointLightRed.position.set(0, 0.5, 0);
-        gameMap.add(pointLightRed);
 
         this.addEntity(
             new MeshEntity({
@@ -169,15 +174,57 @@ class GameLevel1 extends Level
 
     public override initialize(): void {
         super.initialize();
+        setInterval(() => {
+            this.addEntity(new Cube(
+                Math.random() + 0.1, {
+                x: -Math.random() + 2, 
+                y: Math.random() * 10, 
+                z: -Math.random() + 2 }
+            ));
+        }, 3000);
     }
 
     public override update(): void {
         super.update();
-         
-        
-        this.gameMap.getObjectByName('Cube')?.rotateY(0.01);
-        //this.scene.getObjectByName('Sphere')?.rotateOnAxis(new THREE.Vector3(1, 1, 1), 0.01);
+        this.updateLights();
+    }
 
+    private initLights()
+    {
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0);
+        directionalLight.name = "DirectionalLight";
+        directionalLight.position.set(1, 20, 0);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.bias = -0.001
+        directionalLight.shadow.mapSize.width = 4096;
+        directionalLight.shadow.mapSize.height = 4096;
+        const d = 30;
+        directionalLight.shadow.camera.top = d;
+        directionalLight.shadow.camera.bottom = -d;
+        directionalLight.shadow.camera.left = -d;
+        directionalLight.shadow.camera.right = d;
+        directionalLight.shadow.camera.near = 0.1;
+        directionalLight.shadow.camera.far = 100;
+        this.gameMap.add(directionalLight);
+
+        const hemiLight = new THREE.HemisphereLight(0xf9f9f9, 0x444444);
+        hemiLight.position.set(0, 100, 0);
+        hemiLight.intensity = 0.5;
+        this.gameMap.add(hemiLight);
+        
+        const pointLightWhite = new THREE.PointLight(0xffffff, 10, 15);
+        pointLightWhite.name = "PointLightW";
+        pointLightWhite.position.set(0, 0.75, 0);
+        this.gameMap.add(pointLightWhite);
+        
+        const pointLightRed = new THREE.PointLight(0xff0000, 10, 10);
+        pointLightRed.name = "PointLightR";
+        pointLightRed.position.set(0, 0.5, 0);
+        this.gameMap.add(pointLightRed);
+    }
+
+    private updateLights()
+    {
         const directionalLight = this.gameMap.getObjectByName('DirectionalLight') as THREE.DirectionalLight;
         directionalLight.position.x = Math.sin(Date.now() / 1000) * 5;
         directionalLight.position.z = Math.cos(Date.now() / 1000) * 10;
@@ -190,10 +237,6 @@ class GameLevel1 extends Level
         pointLight2.position.x = Math.sin(Date.now() / 1000) * -5;
         pointLight2.position.y = Math.cos(Date.now() / 100) + 0.75;
         pointLight2.position.z = Math.cos(Date.now() / 1000) * -10;
-
-        const ent2 = this.gameMap.getObjectByName('DamagedHelmet') as Entity;
-        if(ent2)
-            ent2.rotateY(0.01);
     }
 }
 

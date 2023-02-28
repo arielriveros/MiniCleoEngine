@@ -58,7 +58,13 @@ export class MeshEntity extends Entity
 
     public update() { super.update(); }
 
-    public destroy() { super.destroy(); }
+    public destroy()
+    { 
+        super.destroy();
+        this.rootMesh.remove(...this.rootMesh.children);
+        this.physicsBody?.removeShape(this.physicsBody.shapes[0]);
+
+    }
 
     public get mesh() { return this.rootMesh; }
 }
