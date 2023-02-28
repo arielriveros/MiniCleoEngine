@@ -4,6 +4,7 @@ import { Level } from "../level/level";
 import { LevelManager } from "../level/levelManager";
 import Stats from "stats.js";
 import { InputController } from "../input/inputController";
+import { Performance } from "../utils/performance";
 
 
 interface EngineParameters
@@ -20,8 +21,8 @@ class Engine
     private _modules: Array<Module>;
     private _renderer!: Renderer;
     private _levelManager!: LevelManager;
-    //private _inputController!: InputController;
     private _stats: Stats;
+    private _performance: Performance;
     private _renderContext: HTMLCanvasElement;
     static _inputController: InputController;
     
@@ -32,6 +33,8 @@ class Engine
         this._stats = new Stats();
         this._stats.showPanel(0);
         document.body.appendChild(this._stats.dom);
+
+        this._performance = new Performance();
 
         this._renderContext = document.getElementById(parameters.context) as HTMLCanvasElement;
 
@@ -100,10 +103,13 @@ class Engine
 
     private mainLoop()
     {
-        Engine._inputController.update();
+        this._performance.measure();
+        Engine._inputController.update(this._performance.time);
         this._stats.begin();
+        
+        
         for(let module of this._modules)
-            module.update();
+            module.update(this._performance.time);
         this._stats.end();
 
         requestAnimationFrame(this.mainLoop.bind(this));

@@ -29,7 +29,7 @@ export abstract class Level
             {
                 gravity: new CANNON.Vec3(0, -9.82, 0),
                 broadphase: new CANNON.NaiveBroadphase(),
-                solver: new CANNON.GSSolver(),
+                solver: new CANNON.GSSolver()
             }
         );
 
@@ -55,11 +55,11 @@ export abstract class Level
             this._cannonDebugger = CannonDebugger(this._gameMap, this._physicsWorld, {});
     }
 
-    public update(): void
+    public update(deltaTime: number): void
     {
-        this.physicsWorld.fixedStep();
+        this._physicsWorld.step(1 / 60, deltaTime, 3);
         for(let entity of this._entities)
-            entity.update();
+            entity.update(deltaTime);
         if(this._cannonDebugger)
             this._cannonDebugger?.update();
         

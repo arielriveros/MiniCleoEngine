@@ -50,7 +50,7 @@ export class Entity extends Object3D
 
     public initialize() {}
 
-    public update() {
+    public update(deltaTime: number) {
         if (this._physicsBody)
         {
             this.position.copy(this._physicsBody.position as any);

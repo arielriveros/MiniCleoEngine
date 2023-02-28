@@ -21,9 +21,9 @@ export class InputController extends Module
         this._keyboardManager.initialize();
     }
 
-    public override update()
+    public override update(deltaTime: number)
     {
-        super.update();
+        super.update(deltaTime);
         this._mouseManager.update();
         this._keyboardManager.update();
     }

@@ -68,9 +68,9 @@ class GameLevel2 extends Level
         };
     }
 
-    public override update(): void
+    public override update(deltaTime: number): void
     {
-        super.update();
+        super.update(deltaTime);
     }
 }
 

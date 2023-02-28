@@ -6,8 +6,8 @@ class Player extends MeshEntity
     {
         super({
             name: 'Player',
-            position: { x: -0.75, y: 1.75/2, z: 2 },
-            rotation: { x: 0, y: 0, z: 0 },
+            position: { x: 1, y: 1.75/2, z: 10 },
+            rotation: { x: 0, y: Math.PI, z: 0 },
             modelPath: 'assets/models/Zombie.glb',
             rigidBody: new RigidBody({
                 mass: 20,
@@ -43,9 +43,9 @@ class Player extends MeshEntity
         this.add(pointLight);
     }
 
-    public override update(): void
+    public override update(deltaTime: number): void
     {
-        super.update();
+        super.update(deltaTime);
     }
 }
 
@@ -86,19 +86,25 @@ class Cube extends MeshEntity
         this._cubeMesh.receiveShadow = true;
         this.setMesh(this._cubeMesh);
 
+        
+    }
+
+    public override initialize(): void
+    {
+        super.initialize();
         this.physicsBody?.addEventListener('collide', (event: { body: { name: any; }; }) => {
             if(event.body.name === 'Player')
                 this.onPlayerCollision();
         });
+        setInterval(() => {
+            this.destroy();
+        }, 3000);
     }
 
     private onPlayerCollision(): void
     {
         this._index++;
         this._cubeMesh.material = new THREE.MeshPhysicalMaterial({color: this._colors[this._index % this._colors.length ], roughness: 0.1, metalness: 0.2});
-
-        if(this._index > this._colors.length - 1)
-            this.destroy();
     }
 }
 
@@ -168,8 +174,6 @@ class GameLevel1 extends Level
                 meshPosition: { x: 0, y: 0, z: 0.35 },
             })
         );
-
-        
     }
 
     public override initialize(): void {
@@ -178,20 +182,20 @@ class GameLevel1 extends Level
             this.addEntity(new Cube(
                 Math.random() + 0.1, {
                 x: -Math.random() + 2, 
-                y: Math.random() * 10, 
+                y: Math.random() * 15, 
                 z: -Math.random() + 2 }
             ));
-        }, 3000);
+        }, 100);
     }
 
-    public override update(): void {
-        super.update();
+    public override update(deltaTime: number): void {
+        super.update(deltaTime);
         this.updateLights();
     }
 
     private initLights()
     {
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 10);
         directionalLight.name = "DirectionalLight";
         directionalLight.position.set(1, 20, 0);
         directionalLight.castShadow = true;

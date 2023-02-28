@@ -56,7 +56,7 @@ export class MeshEntity extends Entity
 
     public initialize() { super.initialize(); }
 
-    public update() { super.update(); }
+    public update(deltaTime: number) { super.update(deltaTime); }
 
     public destroy()
     { 

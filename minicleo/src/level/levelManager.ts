@@ -18,11 +18,11 @@ export class LevelManager extends Module
         super.initialize();
     }
 
-    public override update()
+    public override update(deltaTime: number)
     {
-        super.update();
+        super.update(deltaTime);
         if(this._activeLevel)
-            this._activeLevel.update();
+            this._activeLevel.update(deltaTime);
     }
 
     public destroy()

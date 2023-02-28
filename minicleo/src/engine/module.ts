@@ -16,7 +16,7 @@ export abstract class Module
         this._initialized = true;
     }
 
-    public update(): void {}
+    public update(deltaTime: number): void {}
 
     public destroy(): void {
         // Prevent double destruction
