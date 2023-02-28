@@ -34,7 +34,7 @@ export abstract class Level
         );
 
         // Fixed basic ground plane
-        let groundBody = new RigidBody(0, new SHAPES.Plane(), true);
+        let groundBody = new RigidBody({mass: 0, shape: new SHAPES.Plane(), fixedRotation: true});
         groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
         this.physicsWorld.addBody(groundBody);
     }

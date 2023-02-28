@@ -58,10 +58,10 @@ class GameLevel2 extends Level
                         name: 'DamagedHelmet',
                         position: { x: Math.random()/2, y: 15, z: Math.random()/2 },
                         modelPath: 'assets/models/DamagedHelmet.glb',
-                        rigidBody: new RigidBody(
-                            1,
-                            new SHAPES.Sphere(1),
-                            true),
+                        rigidBody: new RigidBody({
+                            mass: 1,
+                            shape: new SHAPES.Sphere(1)
+                        }),
                     })
                 );
             }

@@ -38,6 +38,7 @@ export class Entity extends Object3D
             const rotation = parameters.rotation || { x: 0, y: 0, z: 0 };
 
             this._physicsBody.position.set(position.x, position.y, position.z);
+            this._physicsBody.shapeOffsets[0].set(0, 0, 0);
             this._physicsBody.quaternion.setFromEuler(rotation.x, rotation.y, rotation.z);
         }
         else
