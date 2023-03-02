@@ -3,8 +3,7 @@ import { Vec3 } from 'cannon-es';
 import { RigidBody } from "../physics/rigidBody";
 import { vec3 } from "../common/interfaces";
 
-export interface EntityParameters
-{
+export interface EntityParameters {
     name?: string;
     position?: vec3;
     rotation?: vec3;
@@ -12,12 +11,12 @@ export interface EntityParameters
     rigidBody?: RigidBody;
 }
 
-export class Entity extends Object3D
-{
+export class Entity extends Object3D {
     private _rootMesh: Object3D;
     private _physicsBody: RigidBody | null;
-    
-    constructor(parameters: EntityParameters)    {
+    private _velocity: Vector3 = new Vector3(); // Velocity as class member
+
+    constructor(parameters: EntityParameters) {
         // Object3D Parameter settings
         super();
         this._rootMesh = new Object3D();
@@ -27,8 +26,7 @@ export class Entity extends Object3D
         this.scale.set(parameters.scale?.x || 1, parameters.scale?.y || 1, parameters.scale?.z || 1);
 
         // Physics Body settings
-        if(parameters.rigidBody)
-        {
+        if (parameters.rigidBody) {
             this._physicsBody = parameters.rigidBody;
             this._physicsBody.name = this.name;
             this._physicsBody.position.set(parameters.position?.x || 0, parameters.position?.y || 0, parameters.position?.z || 0);
@@ -41,9 +39,9 @@ export class Entity extends Object3D
             this._physicsBody.position.set(position.x, position.y, position.z);
             this._physicsBody.shapeOffsets[0].set(0, 0, 0);
             this._physicsBody.quaternion.setFromEuler(rotation.x, rotation.y, rotation.z);
-        }
-        else
+        } else {
             this._physicsBody = null;
+        }
 
         this.add(this._rootMesh);
     }
@@ -51,28 +49,37 @@ export class Entity extends Object3D
     public initialize() {}
 
     public update(deltaTime: number) {
-        if (this._physicsBody)
-        {
+        if (this._physicsBody) {
             this.position.copy(this._physicsBody.position as any);
-            if(!this._physicsBody.fixedRotation)
+            if (!this._physicsBody.fixedRotation) {
                 this.quaternion.copy(this._physicsBody.quaternion as any);
+            }
+
+            // Set velocity based on physics body's velocity
+            this._velocity.copy(this._physicsBody.velocity as any);
+        } else {
+            // No physics body, reset velocity
+            this._velocity.set(0, 0, 0);
         }
     }
 
-    public destroy()
-    {
+    public destroy() {
         this.parent?.remove(this);
     }
 
-    public moveForward(speed: number)
-    {
+    private applyVelocity(dir: Vector3, speed: number) {
+        if (this._physicsBody) {
+            this._physicsBody.velocity.set(dir.x * speed, dir.y * speed, dir.z * speed);
+        } else {
+            this.position.add(dir.multiplyScalar(speed)); // Move position directly if no physics body
+        }
+    }
+    public moveForward(speed: number) {
         // get forward vector
         const forward = new Vector3();
         this.getWorldDirection(forward);
 
-        if (this._physicsBody)
-            this._physicsBody.velocity.set(forward.x * speed, forward.y * speed, forward.z * speed);
-            //this._physicsBody.applyImpulse(new CANNON.Vec3(forward.x * speed, forward.y * speed, forward.z * speed));
+        this.applyVelocity(forward, speed);
     }
 
     public moveRight(speed: number)
@@ -85,9 +92,7 @@ export class Entity extends Object3D
         const right = new Vector3();
         right.crossVectors(forward, new Vector3(0, 1, 0));
 
-        if (this._physicsBody)
-            //this._physicsBody.applyImpulse(new CANNON.Vec3(right.x * speed, right.y * speed, right.z * speed));
-            this._physicsBody.velocity.set(right.x * speed, right.y * speed, right.z * speed);
+        this.applyVelocity(right, speed);
     }
 
     public moveUp(speed: number)
@@ -104,16 +109,15 @@ export class Entity extends Object3D
         const up = new Vector3();
         up.crossVectors(right, forward);
 
-        if (this._physicsBody)
-            this._physicsBody.applyImpulse(new Vec3(up.x * speed, up.y * speed, up.z * speed));
-
+        this.applyVelocity(up, speed);
     }
 
     public rotateEntityY(angle: number): void
     {
         if(this._physicsBody)
-            this._physicsBody.applyTorque(new Vec3(0, angle, 0));
-        //return super.rotateY(angle);
+            this._physicsBody.quaternion.setFromAxisAngle(new Vec3(0, 1, 0), angle);
+        else
+            this.rotation.y = angle;
     }
 
     public get rootMesh() { return this._rootMesh; }

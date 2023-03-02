@@ -1,6 +1,6 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Entity, EntityParameters } from "./entity";
-import { Group, Mesh, Object3D } from "three";
+import { AnimationAction, AnimationClip, AnimationMixer, Group, Mesh, Object3D } from "three";
 import { vec3 } from "../common/interfaces";
 
 interface MeshEntityParameters extends EntityParameters
@@ -13,6 +13,11 @@ interface MeshEntityParameters extends EntityParameters
 
 export class MeshEntity extends Entity
 {
+    private _animations: AnimationClip[] = [];
+    private _activeAnimation: AnimationClip | null = null;
+    private _clipAction: AnimationAction | undefined = undefined;
+    private _mixer: AnimationMixer | null = null;
+
     constructor(parameters: MeshEntityParameters)
     {
         super(parameters);
@@ -27,6 +32,8 @@ export class MeshEntity extends Entity
 
         if (parameters.meshScale)
             this.rootMesh.scale.set(parameters.meshScale.x, parameters.meshScale.y, parameters.meshScale.z);
+
+        this._mixer = new AnimationMixer(this.rootMesh);
     }
 
     public loadMesh(modelPath: string)
@@ -34,6 +41,10 @@ export class MeshEntity extends Entity
         const loader = new GLTFLoader();
         loader.load(modelPath, (gltf) =>
         {
+            console.log(gltf);
+            gltf.animations.forEach((animation) => {
+                this._animations.push(animation);
+            });
             gltf.scene.traverse(
                 (child) => {
                     if ((child as Mesh).isMesh)
@@ -54,9 +65,21 @@ export class MeshEntity extends Entity
         this.rootMesh.add(mesh);
     }
 
-    public initialize() { super.initialize(); }
+    public initialize() {
+        super.initialize();
+    }
 
-    public update(deltaTime: number) { super.update(deltaTime); }
+    public update(deltaTime: number) { 
+        super.update(deltaTime);
+        if (this._animations.length > 0)
+        {
+            let activeAnimation = this._animations[0];
+            this._clipAction = this._mixer?.clipAction(activeAnimation);
+            this._clipAction?.play();
+            this._mixer?.update(deltaTime);
+
+        }
+    }
 
     public destroy()
     { 

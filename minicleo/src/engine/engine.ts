@@ -104,12 +104,12 @@ class Engine
     private mainLoop()
     {
         this._performance.measure();
-        Engine._inputController.update(this._performance.time);
+        Engine._inputController.update(this._performance.time/1000);
         this._stats.begin();
         
         
         for(let module of this._modules)
-            module.update(this._performance.time);
+            module.update(this._performance.time/1000);
         this._stats.end();
 
         requestAnimationFrame(this.mainLoop.bind(this));

@@ -25,13 +25,22 @@ export abstract class Level
     {
         this._levelName = levelName;
         this._entities = new Array<Entity>();
+
+        let broadphase = new CANNON.NaiveBroadphase();
+        broadphase.dirty = true;
+
+        let solver = new CANNON.GSSolver();
+        solver.iterations = 10;
+        solver.tolerance = 0.0;
+
         this._physicsWorld = new CANNON.World(
             {
                 gravity: new CANNON.Vec3(0, -9.82, 0),
-                broadphase: new CANNON.NaiveBroadphase(),
-                solver: new CANNON.GSSolver()
+                broadphase: broadphase,
+                solver: solver
             }
         );
+
 
         // Fixed basic ground plane
         let groundBody = new RigidBody({mass: 0, shape: new SHAPES.Plane(), fixedRotation: true});
@@ -57,12 +66,12 @@ export abstract class Level
 
     public update(deltaTime: number): void
     {
-        this._physicsWorld.step(1 / 60, deltaTime, 3);
         for(let entity of this._entities)
             entity.update(deltaTime);
         if(this._cannonDebugger)
             this._cannonDebugger?.update();
         
+        this._physicsWorld.step(1/60, deltaTime * 1000, 10);
     }
 
     public destroy(): void

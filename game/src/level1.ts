@@ -10,7 +10,7 @@ class Player extends MeshEntity
             rotation: { x: 0, y: Math.PI, z: 0 },
             modelPath: 'assets/models/Zombie.glb',
             rigidBody: new RigidBody({
-                mass: 20,
+                mass: 80,
                 shape: new SHAPES.Cylinder(0.5, 0.5, 1.75, 16),
                 fixedRotation: true}),
             meshPosition: { x: 0, y: -0.88, z: 0 },
@@ -62,7 +62,7 @@ class Cube extends MeshEntity
             position: position,
             scale: { x: size, y: size, z: size },
             rigidBody: new RigidBody({
-                mass: 0.5,
+                mass: 10,
                 shape: new SHAPES.Box({ x: size/2, y: size/2, z: size/2})
             })
         })
@@ -98,7 +98,7 @@ class Cube extends MeshEntity
         });
         setInterval(() => {
             this.destroy();
-        }, 3000);
+        }, 100000);
     }
 
     private onPlayerCollision(): void
@@ -178,14 +178,17 @@ class GameLevel1 extends Level
 
     public override initialize(): void {
         super.initialize();
-        setInterval(() => {
+
+
+        for(let i = 0; i < 10; i++)
+        {
             this.addEntity(new Cube(
                 Math.random() + 0.1, {
                 x: -Math.random() + 2, 
                 y: Math.random() * 15, 
                 z: -Math.random() + 2 }
             ));
-        }, 100);
+        }
     }
 
     public override update(deltaTime: number): void {
